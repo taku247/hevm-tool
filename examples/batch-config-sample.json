@@ -1,0 +1,67 @@
+{
+  "stopOnError": false,
+  "calls": [
+    {
+      "type": "read",
+      "abi": "./examples/sample-abi/ERC20.json",
+      "contractAddress": "0x1234567890123456789012345678901234567890",
+      "functionName": "name",
+      "args": [],
+      "description": "トークン名を取得"
+    },
+    {
+      "type": "read",
+      "abi": "./examples/sample-abi/ERC20.json",
+      "contractAddress": "0x1234567890123456789012345678901234567890",
+      "functionName": "symbol",
+      "args": [],
+      "description": "トークンシンボルを取得"
+    },
+    {
+      "type": "read",
+      "abi": "./examples/sample-abi/ERC20.json",
+      "contractAddress": "0x1234567890123456789012345678901234567890",
+      "functionName": "decimals",
+      "args": [],
+      "description": "小数点桁数を取得"
+    },
+    {
+      "type": "read",
+      "abi": "./examples/sample-abi/ERC20.json",
+      "contractAddress": "0x1234567890123456789012345678901234567890",
+      "functionName": "totalSupply",
+      "args": [],
+      "description": "総供給量を取得"
+    },
+    {
+      "type": "read",
+      "abi": "./examples/sample-abi/ERC20.json",
+      "contractAddress": "0x1234567890123456789012345678901234567890",
+      "functionName": "balanceOf",
+      "args": ["0xabcdef1234567890123456789012345678901234"],
+      "description": "ユーザー残高を確認"
+    },
+    {
+      "type": "write",
+      "abi": "./examples/sample-abi/ERC20.json",
+      "contractAddress": "0x1234567890123456789012345678901234567890",
+      "functionName": "approve",
+      "args": ["0xabcdef1234567890123456789012345678901234", "1000000000000000000"],
+      "options": {
+        "gasLimit": "100000",
+        "gasPrice": "30000000000"
+      },
+      "waitForConfirmation": true,
+      "confirmations": 1,
+      "description": "承認設定（1トークン）"
+    },
+    {
+      "type": "read",
+      "abi": "./examples/sample-abi/ERC20.json",
+      "contractAddress": "0x1234567890123456789012345678901234567890",
+      "functionName": "allowance",
+      "args": ["0x9876543210987654321098765432109876543210", "0xabcdef1234567890123456789012345678901234"],
+      "description": "承認額を確認"
+    }
+  ]
+}
