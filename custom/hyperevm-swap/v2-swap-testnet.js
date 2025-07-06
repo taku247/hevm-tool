@@ -20,6 +20,13 @@ class HyperSwapV2 {
             factory: "0xA028411927E2015A363014881a4404C636218fb1",
             multicall: "0x8DD001ef8778c7be9DC409562d4CC7cDC0E78984",
         };
+        
+        // ガス代保護設定
+        this.gasProtection = {
+            minHypeBalance: ethers.utils.parseEther("0.1"), // 最低0.1 HYPE保持
+            maxGasPrice: ethers.utils.parseUnits("10", "gwei"), // 最大ガス価格
+            estimatedGasLimit: 200000, // 推定ガス使用量
+        };
 
         // トークン設定をconfig/token-config.jsonから読み込み
         this.loadTokenConfig();
@@ -237,6 +244,54 @@ class HyperSwapV2 {
     }
 
     /**
+     * HYPE残高確認（ガス代保護）
+     */
+    async checkHypeBalance(walletAddress) {
+        try {
+            const balance = await this.provider.getBalance(walletAddress);
+            return {
+                success: true,
+                balance: balance.toString(),
+                formatted: ethers.utils.formatEther(balance),
+                hasSufficientGas: balance.gte(this.gasProtection.minHypeBalance)
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+
+    /**
+     * ガス代見積もりと安全性チェック
+     */
+    async estimateGasCost() {
+        try {
+            const gasPrice = await this.provider.getGasPrice();
+            const estimatedCost = gasPrice.mul(this.gasProtection.estimatedGasLimit);
+            
+            // ガス価格が高すぎる場合の警告
+            const isGasPriceHigh = gasPrice.gt(this.gasProtection.maxGasPrice);
+            
+            return {
+                success: true,
+                gasPrice: gasPrice.toString(),
+                gasPriceFormatted: ethers.utils.formatUnits(gasPrice, "gwei"),
+                estimatedCost: estimatedCost.toString(),
+                estimatedCostFormatted: ethers.utils.formatEther(estimatedCost),
+                isGasPriceHigh,
+                recommendation: isGasPriceHigh ? "ガス価格が高いため、後で再試行することを推奨" : "ガス価格は適正"
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+
+    /**
      * スリッページ計算
      */
     calculateMinAmountOut(amountOut, slippagePercent) {
@@ -351,8 +406,40 @@ class HyperSwapV2 {
             );
             console.log(`   スリッページ: ${slippagePercent}%\n`);
 
-            // 1. 残高確認
-            console.log("💰 残高確認:");
+            // 1. HYPE残高確認（ガス代保護）
+            console.log("⛽ HYPE残高確認（ガス代保護）:");
+            const hypeBalance = await this.checkHypeBalance(wallet.address);
+            if (!hypeBalance.success) {
+                throw new Error(`HYPE残高確認失敗: ${hypeBalance.error}`);
+            }
+            
+            console.log(`   HYPE残高: ${hypeBalance.formatted}`);
+            console.log(`   最低必要額: ${ethers.utils.formatEther(this.gasProtection.minHypeBalance)}`);
+            
+            if (!hypeBalance.hasSufficientGas) {
+                throw new Error(
+                    `❌ ガス代不足: HYPE残高 ${hypeBalance.formatted} < 最低必要額 ${ethers.utils.formatEther(this.gasProtection.minHypeBalance)}\n` +
+                    `   フォーセットでHYPEを取得してください: https://app.hyperliquid-testnet.xyz/drip`
+                );
+            }
+            
+            // 2. ガス代見積もり
+            console.log("\n💸 ガス代見積もり:");
+            const gasCost = await this.estimateGasCost();
+            if (!gasCost.success) {
+                throw new Error(`ガス代見積もり失敗: ${gasCost.error}`);
+            }
+            
+            console.log(`   現在ガス価格: ${gasCost.gasPriceFormatted} Gwei`);
+            console.log(`   推定ガス代: ${gasCost.estimatedCostFormatted} HYPE`);
+            console.log(`   ${gasCost.recommendation}`);
+            
+            if (gasCost.isGasPriceHigh) {
+                console.log(`   ⚠️  ガス価格が高いです。続行しますか？`);
+            }
+            
+            // 3. トークン残高確認
+            console.log("\n💰 トークン残高確認:");
             const balanceResult = await this.getTokenBalance(
                 tokenInSymbol,
                 wallet.address
@@ -375,7 +462,7 @@ class HyperSwapV2 {
 
             console.log(`   ${tokenInSymbol}: ${balanceResult.formatted}`);
 
-            // 2. レート取得
+            // 4. レート取得
             console.log("\n📊 レート取得:");
             const quote = await this.getQuote(
                 tokenInSymbol,
@@ -406,7 +493,7 @@ class HyperSwapV2 {
             );
             console.log(`   レート: ${quote.rate.toFixed(6)}`);
 
-            // 3. Approval
+            // 5. Approval
             console.log("\n🔐 Approval:");
             const approvalResult = await this.ensureApproval(
                 wallet,
@@ -417,7 +504,7 @@ class HyperSwapV2 {
                 throw new Error(`Approval失敗: ${approvalResult.error}`);
             }
 
-            // 4. スワップ実行
+            // 6. スワップ実行
             console.log("\n🚀 スワップ実行:");
             const router = new ethers.Contract(
                 this.config.router,
@@ -428,12 +515,17 @@ class HyperSwapV2 {
             const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20分後
             const path = quote.path;
 
+            // ガス制限を設定して安全にスワップ実行
             const tx = await router.swapExactTokensForTokens(
                 amountIn,
                 minAmountOut,
                 path,
                 wallet.address,
-                deadline
+                deadline,
+                {
+                    gasLimit: this.gasProtection.estimatedGasLimit,
+                    gasPrice: await this.provider.getGasPrice()
+                }
             );
 
             console.log(`   ⏳ トランザクション送信: ${tx.hash}`);
@@ -445,7 +537,7 @@ class HyperSwapV2 {
                 `   ガス使用量: ${receipt.gasUsed.toNumber().toLocaleString()}`
             );
 
-            // 5. 結果確認
+            // 7. 結果確認
             console.log("\n📊 スワップ結果:");
             const newBalance = await this.getTokenBalance(
                 tokenOutSymbol,
@@ -455,6 +547,15 @@ class HyperSwapV2 {
                 console.log(
                     `   ${tokenOutSymbol}残高: ${newBalance.formatted}`
                 );
+            }
+            
+            // HYPE残高も再確認
+            const finalHypeBalance = await this.checkHypeBalance(wallet.address);
+            if (finalHypeBalance.success) {
+                console.log(`   HYPE残高: ${finalHypeBalance.formatted} (ガス代使用後)`);
+                if (!finalHypeBalance.hasSufficientGas) {
+                    console.log(`   ⚠️  HYPE残高が最低必要額を下回りました`);
+                }
             }
 
             return {

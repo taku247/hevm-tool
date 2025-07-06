@@ -29,7 +29,7 @@
 
 ### 3. ABI分離の必要性
 - **SwapRouter01**: V3スワップ専用ABI (`HyperSwapV3SwapRouter01.json`)
-- **SwapRouter02**: 拡張機能ABI (`HyperSwapV3Router.json`)
+- **SwapRouter02**: 拡張機能ABI (`HyperSwapV3SwapRouter02.json`)
 
 ## 🔧 修正されたdex-config.json設定
 
@@ -40,7 +40,7 @@
     "swapRouter02": "0x51c5958FFb3e326F8d7AA945948159f1FF27e14A", 
     "defaultSwapRouter": "swapRouter01",
     "swapRouter01Abi": "./abi/HyperSwapV3SwapRouter01.json",
-    "swapRouter02Abi": "./abi/HyperSwapV3Router.json"
+    "swapRouter02Abi": "./abi/HyperSwapV3SwapRouter02.json"
   }
 }
 ```

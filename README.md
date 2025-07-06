@@ -815,7 +815,7 @@ ts-node custom/monitoring/alert-system.ts
   },
   "hyperswap_v3": {
     "quoterAbi": "./abi/HyperSwapQuoterV2.json",     // ✅ 分離
-    "swapRouterAbi": "./abi/HyperSwapV3Router.json", // ✅ 分離
+    "swapRouterAbi": "./abi/HyperSwapV3SwapRouter02.json", // ✅ 分離
     "quoteFunctions": {
       "outputs": ["uint256", "uint160", "uint32", "uint256"] // ✅ 詳細情報
     }

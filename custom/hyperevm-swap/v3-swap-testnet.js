@@ -31,6 +31,13 @@ class HyperSwapV3 {
       '100bps': 10000
     };
     
+    // ガス代保護設定
+    this.gasProtection = {
+      minHypeBalance: ethers.utils.parseEther("0.1"), // 最低0.1 HYPE保持
+      maxGasPrice: ethers.utils.parseUnits("10", "gwei"), // 最大ガス価格
+      estimatedGasLimit: 250000, // V3は少し多めに見積もり
+    };
+    
     // V3 SwapRouter02 ABI（主要関数のみ）
     this.swapRouterABI = [
       {
@@ -83,21 +90,30 @@ class HyperSwapV3 {
       }
     ];
     
-    // V3 Quoter ABI
+    // V3 Quoter ABI (Struct引数版 - バイトコード解析結果に基づく)
     this.quoterABI = [
       {
         "name": "quoteExactInputSingle",
         "type": "function",
         "stateMutability": "view",
         "inputs": [
-          {"name": "tokenIn", "type": "address"},
-          {"name": "tokenOut", "type": "address"},
-          {"name": "fee", "type": "uint24"},
-          {"name": "amountIn", "type": "uint256"},
-          {"name": "sqrtPriceLimitX96", "type": "uint160"}
+          {
+            "name": "params",
+            "type": "tuple",
+            "components": [
+              {"name": "tokenIn", "type": "address"},
+              {"name": "tokenOut", "type": "address"},
+              {"name": "amountIn", "type": "uint256"},
+              {"name": "fee", "type": "uint24"},
+              {"name": "sqrtPriceLimitX96", "type": "uint160"}
+            ]
+          }
         ],
         "outputs": [
-          {"name": "amountOut", "type": "uint256"}
+          {"name": "amountOut", "type": "uint256"},
+          {"name": "sqrtPriceX96After", "type": "uint160"},
+          {"name": "initializedTicksCrossed", "type": "uint32"},
+          {"name": "gasEstimate", "type": "uint256"}
         ]
       },
       {
@@ -105,14 +121,23 @@ class HyperSwapV3 {
         "type": "function",
         "stateMutability": "view",
         "inputs": [
-          {"name": "tokenIn", "type": "address"},
-          {"name": "tokenOut", "type": "address"},
-          {"name": "fee", "type": "uint24"},
-          {"name": "amountOut", "type": "uint256"},
-          {"name": "sqrtPriceLimitX96", "type": "uint160"}
+          {
+            "name": "params",
+            "type": "tuple",
+            "components": [
+              {"name": "tokenIn", "type": "address"},
+              {"name": "tokenOut", "type": "address"},
+              {"name": "amountOut", "type": "uint256"},
+              {"name": "fee", "type": "uint24"},
+              {"name": "sqrtPriceLimitX96", "type": "uint160"}
+            ]
+          }
         ],
         "outputs": [
-          {"name": "amountIn", "type": "uint256"}
+          {"name": "amountIn", "type": "uint256"},
+          {"name": "sqrtPriceX96After", "type": "uint160"},
+          {"name": "initializedTicksCrossed", "type": "uint32"},
+          {"name": "gasEstimate", "type": "uint256"}
         ]
       }
     ];
@@ -284,13 +309,16 @@ class HyperSwapV3 {
       
       for (const feeAmount of feesToTest) {
         try {
-          const amountOut = await quoter.quoteExactInputSingle(
-            tokenIn,
-            tokenOut,
-            feeAmount,
-            amountIn,
-            0 // sqrtPriceLimitX96 = 0 (制限なし)
-          );
+          const result = await quoter.quoteExactInputSingle({
+            tokenIn: tokenIn,
+            tokenOut: tokenOut,
+            amountIn: amountIn,
+            fee: feeAmount,
+            sqrtPriceLimitX96: 0 // 制限なし
+          });
+          
+          // QuoterV2は複数の値を返す [amountOut, sqrtPriceX96After, initializedTicksCrossed, gasEstimate]
+          const amountOut = result.amountOut || result[0];
           
           const rate = parseFloat(ethers.utils.formatUnits(amountOut, 18)) / 
                       parseFloat(ethers.utils.formatUnits(amountIn, 18));
@@ -340,6 +368,54 @@ class HyperSwapV3 {
     }
   }
   
+  /**
+   * HYPE残高確認（ガス代保護）
+   */
+  async checkHypeBalance(walletAddress) {
+    try {
+      const balance = await this.provider.getBalance(walletAddress);
+      return {
+        success: true,
+        balance: balance.toString(),
+        formatted: ethers.utils.formatEther(balance),
+        hasSufficientGas: balance.gte(this.gasProtection.minHypeBalance)
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * ガス代見積もりと安全性チェック
+   */
+  async estimateGasCost() {
+    try {
+      const gasPrice = await this.provider.getGasPrice();
+      const estimatedCost = gasPrice.mul(this.gasProtection.estimatedGasLimit);
+      
+      // ガス価格が高すぎる場合の警告
+      const isGasPriceHigh = gasPrice.gt(this.gasProtection.maxGasPrice);
+      
+      return {
+        success: true,
+        gasPrice: gasPrice.toString(),
+        gasPriceFormatted: ethers.utils.formatUnits(gasPrice, "gwei"),
+        estimatedCost: estimatedCost.toString(),
+        estimatedCostFormatted: ethers.utils.formatEther(estimatedCost),
+        isGasPriceHigh,
+        recommendation: isGasPriceHigh ? "ガス価格が高いため、後で再試行することを推奨" : "ガス価格は適正"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
   /**
    * スリッページ計算
    */
@@ -430,8 +506,40 @@ class HyperSwapV3 {
       console.log(`   入力量: ${ethers.utils.formatUnits(amountIn, 18)} ${tokenInSymbol}`);
       console.log(`   スリッページ: ${slippagePercent}%\n`);
       
-      // 1. 残高確認
-      console.log('💰 残高確認:');
+      // 1. HYPE残高確認（ガス代保護）
+      console.log('⛽ HYPE残高確認（ガス代保護）:');
+      const hypeBalance = await this.checkHypeBalance(wallet.address);
+      if (!hypeBalance.success) {
+        throw new Error(`HYPE残高確認失敗: ${hypeBalance.error}`);
+      }
+      
+      console.log(`   HYPE残高: ${hypeBalance.formatted}`);
+      console.log(`   最低必要額: ${ethers.utils.formatEther(this.gasProtection.minHypeBalance)}`);
+      
+      if (!hypeBalance.hasSufficientGas) {
+        throw new Error(
+          `❌ ガス代不足: HYPE残高 ${hypeBalance.formatted} < 最低必要額 ${ethers.utils.formatEther(this.gasProtection.minHypeBalance)}\n` +
+          `   フォーセットでHYPEを取得してください: https://app.hyperliquid-testnet.xyz/drip`
+        );
+      }
+      
+      // 2. ガス代見積もり
+      console.log('\n💸 ガス代見積もり:');
+      const gasCost = await this.estimateGasCost();
+      if (!gasCost.success) {
+        throw new Error(`ガス代見積もり失敗: ${gasCost.error}`);
+      }
+      
+      console.log(`   現在ガス価格: ${gasCost.gasPriceFormatted} Gwei`);
+      console.log(`   推定ガス代: ${gasCost.estimatedCostFormatted} HYPE`);
+      console.log(`   ${gasCost.recommendation}`);
+      
+      if (gasCost.isGasPriceHigh) {
+        console.log(`   ⚠️  ガス価格が高いです。続行しますか？`);
+      }
+      
+      // 3. トークン残高確認
+      console.log('\n💰 トークン残高確認:');
       const balanceResult = await this.getTokenBalance(tokenInSymbol, wallet.address);
       if (!balanceResult.success) {
         throw new Error(`残高確認失敗: ${balanceResult.error}`);
@@ -444,7 +552,7 @@ class HyperSwapV3 {
       
       console.log(`   ${tokenInSymbol}: ${balanceResult.formatted}`);
       
-      // 2. レート取得
+      // 4. レート取得
       console.log('\n📊 レート取得:');
       const quote = await this.getQuote(tokenInSymbol, tokenOutSymbol, amountIn, fee);
       if (!quote.success) {
@@ -460,14 +568,14 @@ class HyperSwapV3 {
       console.log(`   最小出力: ${ethers.utils.formatUnits(minAmountOut, 18)} ${tokenOutSymbol}`);
       console.log(`   レート: ${bestQuote.rate.toFixed(6)}`);
       
-      // 3. Approval
+      // 5. Approval
       console.log('\n🔐 Approval:');
       const approvalResult = await this.ensureApproval(wallet, tokenInSymbol, amountIn);
       if (!approvalResult.success) {
         throw new Error(`Approval失敗: ${approvalResult.error}`);
       }
       
-      // 4. V3スワップ実行
+      // 6. V3スワップ実行
       console.log('\n🚀 V3スワップ実行:');
       const swapRouter = new ethers.Contract(this.config.swapRouter02, this.swapRouterABI, wallet);
       
@@ -484,7 +592,11 @@ class HyperSwapV3 {
         sqrtPriceLimitX96: 0
       };
       
-      const tx = await swapRouter.exactInputSingle(params);
+      // ガス制限を設定して安全にスワップ実行
+      const tx = await swapRouter.exactInputSingle(params, {
+        gasLimit: this.gasProtection.estimatedGasLimit,
+        gasPrice: await this.provider.getGasPrice()
+      });
       
       console.log(`   ⏳ トランザクション送信: ${tx.hash}`);
       
@@ -493,11 +605,20 @@ class HyperSwapV3 {
       console.log(`   ✅ スワップ完了: Block ${receipt.blockNumber}`);
       console.log(`   ガス使用量: ${receipt.gasUsed.toNumber().toLocaleString()}`);
       
-      // 5. 結果確認
+      // 7. 結果確認
       console.log('\n📊 スワップ結果:');
       const newBalance = await this.getTokenBalance(tokenOutSymbol, wallet.address);
       if (newBalance.success) {
         console.log(`   ${tokenOutSymbol}残高: ${newBalance.formatted}`);
+      }
+      
+      // HYPE残高も再確認
+      const finalHypeBalance = await this.checkHypeBalance(wallet.address);
+      if (finalHypeBalance.success) {
+        console.log(`   HYPE残高: ${finalHypeBalance.formatted} (ガス代使用後)`);
+        if (!finalHypeBalance.hasSufficientGas) {
+          console.log(`   ⚠️  HYPE残高が最低必要額を下回りました`);
+        }
       }
       
       return {
