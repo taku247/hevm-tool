@@ -84,15 +84,6 @@
           "type": "native",
           "category": "testnet"
         },
-        "WHYPE": {
-          "symbol": "WHYPE",
-          "name": "Wrapped HYPE (Testnet)",
-          "address": "0x5555555555555555555555555555555555555555",
-          "decimals": 18,
-          "type": "wrapped-native",
-          "wrappedToken": "HYPE",
-          "category": "testnet"
-        },
         "HSPX": {
           "symbol": "HSPX",
           "name": "HyperSwap Token (Testnet)",

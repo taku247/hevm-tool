@@ -11,14 +11,14 @@
   {
     "name": "quoteExactInputSingle",
     "type": "function",
-    "stateMutability": "payable",
+    "stateMutability": "view",
     "inputs": [
       {
         "components": [
           { "name": "tokenIn", "type": "address" },
           { "name": "tokenOut", "type": "address" },
-          { "name": "fee", "type": "uint24" },
           { "name": "amountIn", "type": "uint256" },
+          { "name": "fee", "type": "uint24" },
           { "name": "sqrtPriceLimitX96", "type": "uint160" }
         ],
         "internalType": "struct IQuoterV2.QuoteExactInputSingleParams",
@@ -36,7 +36,7 @@
   {
     "name": "quoteExactInput",
     "type": "function",
-    "stateMutability": "payable",
+    "stateMutability": "view",
     "inputs": [
       { "name": "path", "type": "bytes" },
       { "name": "amountIn", "type": "uint256" }
@@ -51,14 +51,14 @@
   {
     "name": "quoteExactOutputSingle",
     "type": "function",
-    "stateMutability": "payable",
+    "stateMutability": "view",
     "inputs": [
       {
         "components": [
           { "name": "tokenIn", "type": "address" },
           { "name": "tokenOut", "type": "address" },
-          { "name": "fee", "type": "uint24" },
           { "name": "amountOut", "type": "uint256" },
+          { "name": "fee", "type": "uint24" },
           { "name": "sqrtPriceLimitX96", "type": "uint160" }
         ],
         "internalType": "struct IQuoterV2.QuoteExactOutputSingleParams",

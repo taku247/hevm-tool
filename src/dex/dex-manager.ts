@@ -151,16 +151,21 @@ export class DexManager {
           contractAddress: dexConfig.quoter,
           functionName: 'quoteExactInputSingle',
           args: [
-            tokenIn.address,
-            tokenOut.address,
-            feeAmount,
-            params.amountIn,
-            0 // sqrtPriceLimitX96 = 0 (制限なし)
+            {
+              tokenIn: tokenIn.address,
+              tokenOut: tokenOut.address,
+              amountIn: params.amountIn,
+              fee: feeAmount,
+              sqrtPriceLimitX96: 0 // 制限なし
+            }
           ]
         });
 
         if (result.success && result.result) {
-          const amountOut = result.result as string;
+          // QuoterV2は [amountOut, sqrtPriceX96After, initializedTicksCrossed, gasEstimate] を返す
+          const quoterResult = result.result as any[];
+          const amountOut = quoterResult[0] as string;
+          const gasEstimate = quoterResult[3] ? parseInt(quoterResult[3].toString()) : 250000;
           
           // レート計算
           const amountInFormatted = parseFloat(ethers.utils.formatUnits(params.amountIn, tokenIn.decimals));
@@ -176,7 +181,7 @@ export class DexManager {
             amountOut,
             rate,
             fee: feeAmount,
-            gasEstimate: 200000, // V3の典型的なガス使用量
+            gasEstimate: gasEstimate, // QuoterV2から取得した実際のガス見積もり
             timestamp: new Date().toISOString(),
             success: true
           });
