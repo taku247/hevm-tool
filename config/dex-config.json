@@ -167,10 +167,11 @@
           "quoter": "0x7FEd8993828A61A5985F384Cee8bDD42177Aa263",
           "swapRouter01": "0xD81F56576B1FF2f3Ef18e9Cc71Adaa42516fD990",
           "swapRouter02": "0x51c5958FFb3e326F8d7AA945948159f1FF27e14A",
-          "defaultSwapRouter": "swapRouter02",
+          "defaultSwapRouter": "swapRouter01",
           "positionManager": "0x09Aca834543b5790DB7a52803d5F9d48c5b87e80",
           "quoterAbi": "./abi/HyperSwapQuoterV2.json",
-          "swapRouterAbi": "./abi/HyperSwapV3Router.json",
+          "swapRouter01Abi": "./abi/HyperSwapV3SwapRouter01.json",
+          "swapRouter02Abi": "./abi/HyperSwapV3Router.json",
           "quoteFunctions": {
             "quoteExactInputSingle": {
               "inputs": ["tuple"],
