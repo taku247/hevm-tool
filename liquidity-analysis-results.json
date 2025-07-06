@@ -1,0 +1,210 @@
+{
+  "metadata": {
+    "timestamp": "2025-01-05T15:30:00Z",
+    "chainId": 999,
+    "network": "HyperEVM",
+    "tokens": {
+      "WHYPE": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "decimals": 18,
+        "description": "Wrapped HYPE - ネイティブトークンのWrapped版"
+      },
+      "UBTC": {
+        "address": "0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463",
+        "decimals": 8,
+        "description": "Universal Bitcoin"
+      },
+      "UETH": {
+        "address": "0xBe6727B535545C67d5cAa73dEa54865B92CF7907",
+        "decimals": 18,
+        "description": "Universal Ethereum"
+      },
+      "ADHD": {
+        "address": "0xE3D5F45d97fee83B48c85E00c8359A2E07D68Fee",
+        "decimals": 18,
+        "description": "ADHD Token - ミームトークン"
+      },
+      "BUDDY": {
+        "address": "0x47bb061C0204Af921F43DC73C7D7768d2672DdEE",
+        "decimals": 18,
+        "description": "BUDDY Token - ミームトークン"
+      },
+      "CATBAL": {
+        "address": "0x11735dBd0B97CfA7Accf47d005673BA185f7fd49",
+        "decimals": 18,
+        "description": "CATBAL Token - ミームトークン"
+      },
+      "HFUN": {
+        "address": "0xa320D9f65ec992EfF38622c63627856382Db726c",
+        "decimals": 18,
+        "description": "HFUN Token - ミームトークン"
+      }
+    }
+  },
+  "v2_liquidity": {
+    "protocol": "HyperSwap V2",
+    "router": "0xb4a9C4e6Ea8E2191d2FA5B380452a634Fb21240A",
+    "available_pairs": 16,
+    "pairs": [
+      {
+        "from": "WHYPE",
+        "to": "UBTC",
+        "rate": 0.000355,
+        "description": "1 WHYPE = 0.000355 UBTC"
+      },
+      {
+        "from": "WHYPE",
+        "to": "UETH",
+        "rate": 0.015355,
+        "description": "1 WHYPE = 0.015355 UETH"
+      },
+      {
+        "from": "WHYPE",
+        "to": "ADHD",
+        "rate": 12941.00596,
+        "description": "1 WHYPE = 12,941 ADHD"
+      },
+      {
+        "from": "WHYPE",
+        "to": "BUDDY",
+        "rate": 0.00000009,
+        "description": "1 WHYPE = 0.00000009 BUDDY (極小流動性)"
+      },
+      {
+        "from": "WHYPE",
+        "to": "CATBAL",
+        "rate": 4.964053,
+        "description": "1 WHYPE = 4.96 CATBAL"
+      },
+      {
+        "from": "WHYPE",
+        "to": "HFUN",
+        "rate": 1.382071,
+        "description": "1 WHYPE = 1.38 HFUN"
+      },
+      {
+        "from": "UBTC",
+        "to": "WHYPE",
+        "rate": 638.038982,
+        "description": "1 UBTC = 638.04 WHYPE"
+      },
+      {
+        "from": "UBTC",
+        "to": "UETH",
+        "rate": 0.654852,
+        "description": "1 UBTC = 0.65 UETH"
+      },
+      {
+        "from": "UETH",
+        "to": "WHYPE",
+        "rate": 54.562358,
+        "description": "1 UETH = 54.56 WHYPE"
+      },
+      {
+        "from": "UETH",
+        "to": "UBTC",
+        "rate": 0.009163,
+        "description": "1 UETH = 0.009163 UBTC"
+      },
+      {
+        "from": "ADHD",
+        "to": "WHYPE",
+        "rate": 0.000076,
+        "description": "1 ADHD = 0.000076 WHYPE"
+      },
+      {
+        "from": "BUDDY",
+        "to": "WHYPE",
+        "rate": 11093.78546,
+        "description": "1 BUDDY = 11,093.79 WHYPE"
+      },
+      {
+        "from": "BUDDY",
+        "to": "UBTC",
+        "rate": 0.00000001,
+        "description": "1 BUDDY = 0.00000001 UBTC (極小流動性)"
+      },
+      {
+        "from": "CATBAL",
+        "to": "WHYPE",
+        "rate": 0.140148,
+        "description": "1 CATBAL = 0.14 WHYPE"
+      },
+      {
+        "from": "HFUN",
+        "to": "WHYPE",
+        "rate": 0.719004,
+        "description": "1 HFUN = 0.72 WHYPE"
+      }
+    ]
+  },
+  "v3_liquidity": {
+    "protocol": "HyperSwap V3",
+    "quoter": "0x03A918028f22D9E1473B7959C927AD7425A45C7C",
+    "direct_pairs": 0,
+    "multihop_routes": 11,
+    "routes": [
+      {
+        "path": "WHYPE → UETH → UBTC",
+        "fees": [500, 500],
+        "rate": 0.00000002,
+        "description": "500bps → 500bps"
+      },
+      {
+        "path": "WHYPE → UETH → UBTC",
+        "fees": [3000, 3000],
+        "rate": 0.00000003,
+        "description": "3000bps → 3000bps (最良)"
+      },
+      {
+        "path": "UETH → WHYPE → UBTC",
+        "fees": [500, 500],
+        "rate": 0.00000003,
+        "description": "500bps → 500bps"
+      },
+      {
+        "path": "BUDDY → WHYPE → UBTC",
+        "fees": [3000, 500],
+        "rate": 0.00000002,
+        "description": "3000bps → 500bps"
+      },
+      {
+        "path": "CATBAL → WHYPE → UBTC",
+        "fees": [3000, 3000],
+        "rate": 0.00000005,
+        "description": "3000bps → 3000bps"
+      }
+    ]
+  },
+  "analysis": {
+    "hub_token": "WHYPE",
+    "most_liquid_pairs": [
+      "BUDDY → WHYPE (11,093.79)",
+      "WHYPE → ADHD (12,941.01)",
+      "UBTC → WHYPE (638.04)"
+    ],
+    "recommendations": {
+      "for_whype_holders": {
+        "to_ubtc": "V2直接取引 (1:0.000355)",
+        "to_adhd": "V2直接取引 (1:12,941)",
+        "to_meme_tokens": "V2で直接交換可能"
+      },
+      "for_meme_token_holders": {
+        "strategy": "まずWHYPEに交換してから目的トークンへ",
+        "best_rates": {
+          "BUDDY": "1 BUDDY = 11,093 WHYPE",
+          "ADHD": "1 ADHD = 0.000076 WHYPE",
+          "CATBAL": "1 CATBAL = 0.14 WHYPE",
+          "HFUN": "1 HFUN = 0.72 WHYPE"
+        }
+      }
+    },
+    "key_findings": [
+      "V2が主要な流動性プロトコル（16ペア）",
+      "V3は直接ペアが存在せず、マルチホップのみ",
+      "WHYPEがすべての取引のハブトークン",
+      "新トークン（ADHD、BUDDY、CATBAL、HFUN）はV2でのみ取引可能",
+      "V3のマルチホップは極めて低レート（0.00000002-0.00000005 UBTC）"
+    ]
+  }
+}

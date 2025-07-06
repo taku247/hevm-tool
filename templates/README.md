@@ -139,7 +139,7 @@ ts-node templates/batch-execute.ts --config=./examples/batch-config-sample.json 
 ```bash
 # .env ファイル
 HYPEREVM_RPC_URL=https://rpc.hyperliquid.xyz/evm
-PRIVATE_KEY=0x1234567890123456789012345678901234567890123456789012345678901234
+PRIVATE_KEY=YOUR_PRIVATE_KEY_HERE
 ```
 
 ### バッチ設定ファイル例

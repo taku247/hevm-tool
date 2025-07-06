@@ -1,35 +1,69 @@
-# Hyperevm Chain Tools
+# HyperEVM Tools
 
-Hyperevmチェーンとの相互作用を行うためのスクリプトとダッシュボードツールです。TypeScript対応の汎用コントラクトテンプレートも含まれています。
+HyperEVMチェーンとの相互作用を行うためのスクリプトとツールです。設定ベースのDEX統合システムとTypeScript対応の汎用コントラクトテンプレートを含みます。
 
 ## 🚀 主要機能
 
-### 1. 従来のスクリプト（TypeScript化済み）
-- **balance_check.ts**: アドレスの残高確認
-- **transaction_sender.ts**: トランザクション送信  
-- **contract_interaction.ts**: スマートコントラクト相互作用
+### 1. 🆕 設定ベースDEX統合システム
+- **DexManager**: 複数DEXプロトコル（V2/V3）の統合管理
+- **設定駆動**: JSON設定ファイルによる柔軟なDEX追加
+- **マルチプロトコル対応**: HyperSwap V2/V3、KittenSwap V2対応
+- **自動ルーティング**: 最適レート検索・アービトラージ機会発見
+- **包括的テスト**: ユニット/統合/実動作テスト完備
 
-### 2. 🆕 汎用コントラクトテンプレート
-- **call-read.ts**: どんなコントラクトのREAD関数も実行
-- **call-write.ts**: どんなコントラクトのWRITE関数も実行（ガス制御付き）
+### 2. DEX監視・取引機能
+- **dex-rate-monitor.ts**: リアルタイムレート監視
+- **flexible-dex-monitor.js**: 設定ベース監視ツール
+- **レート比較**: 複数DEXの価格差分析
+- **流動性検証**: プール存在・流動性確認
+
+### 3. 汎用コントラクトテンプレート
+- **call-read.ts**: 任意コントラクトのREAD関数実行
+- **call-write.ts**: 任意コントラクトのWRITE関数実行（ガス制御付き）
 - **contract-deploy.ts**: コントラクトデプロイ
 - **batch-execute.ts**: 複数操作の一括実行
 
-### 3. 🚀 動的ガス価格制御機能
+### 4. 動的ガス価格制御機能
 - **gas-analyzer.ts**: ネットワークガス価格分析・監視
 - **動的ガス戦略**: safe/standard/fast/instantの4段階
 - **自動最適化**: ネットワーク混雑度に応じた価格調整
 - **手数料分析**: 事前コスト計算機能
 
-### 4. Webダッシュボード
-- TypeScript対応のExpress サーバー
-- リアルタイム結果表示（WebSocket）
-- 汎用テンプレートも実行可能
-
 ### 5. 包括的なテストスイート
-- Jest + TypeScript
+- **設定システムテスト**: ConfigLoader完全テスト
+- **DEX統合テスト**: 実ネットワーク接続テスト
+- **監視システムテスト**: パフォーマンス・メモリテスト
 - ユニットテスト・統合テスト・E2Eテスト
 - 70%以上のカバレッジ
+
+## 🔍 DEX流動性調査結果
+
+**HyperEVM DEX状況 (2025年1月時点):**
+
+### V2プロトコル ✅
+- **HyperSwap V2**: `0xb4a9C4e6Ea8E2191d2FA5B380452a634Fb21240A`
+  - WHYPE/UBTC ペア: **正常動作** (レート取得可能)
+  - 現在唯一の安定利用可能なDEX
+
+### V3プロトコル ⚠️
+- **HyperSwap V3**: `0x03A918028f22D9E1473B7959C927AD7425A45C7C`
+  - WHYPE/UBTC直接ペア: **流動性なし** (全fee tierでrevert)
+  - **マルチホップ可能**: WHYPE → UETH → UBTC (成功確認済み)
+  - UIは自動ルーティング機能を持っており、表示上はV3利用可能
+
+### 利用可能トークン
+```json
+{
+  "WHYPE": "0x5555555555555555555555555555555555555555",
+  "UBTC": "0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463", 
+  "UETH": "0xBe6727B535545C67d5cAa73dEa54865B92CF7907"
+}
+```
+
+### 技術的発見
+1. **UIとバックエンドの乾離**: UIでV3表示でも実際はマルチホップ経由
+2. **ルーティングSDK**: HyperSwapは高度な自動ルーティング機能を実装
+3. **設定ベースアーキテクチャ**: 将来のDEX追加に対応した柔軟な設計
 
 ## 📦 セットアップ
 
@@ -45,7 +79,7 @@ cp .env.example .env
 
 # 以下の環境変数を設定
 HYPEREVM_RPC_URL=https://rpc.hyperliquid.xyz/evm
-PRIVATE_KEY=0x1234567890123456789012345678901234567890123456789012345678901234
+PRIVATE_KEY=YOUR_PRIVATE_KEY_HERE
 PORT=3000
 ```
 
@@ -158,6 +192,70 @@ ts-node templates/batch-execute.ts --config=./examples/batch-config-sample.json
 
 # エラー時停止オプション付き
 ts-node templates/batch-execute.ts --config=./examples/batch-config-sample.json --stop-on-error
+```
+
+## 🎯 設定ベースDEX統合システムの使用方法
+
+### 柔軟なDEX監視ツール
+
+```bash
+# 設定情報確認
+ts-node custom/monitoring/flexible-dex-monitor.ts --config
+
+# 基本的なレート取得
+ts-node custom/monitoring/flexible-dex-monitor.ts --tokens=WHYPE,UBTC --amount=1
+
+# V2プロトコルのみでレート比較
+ts-node custom/monitoring/flexible-dex-monitor.ts --protocol=uniswap-v2 --tokens=WHYPE,UBTC
+
+# 特定DEXのみで監視
+ts-node custom/monitoring/flexible-dex-monitor.ts --dex=hyperswap_v2 --tokens=WHYPE,UBTC --monitor
+
+# アービトラージ機会検索
+ts-node custom/monitoring/flexible-dex-monitor.ts --tokens=WHYPE,UBTC --arbitrage --min-spread=0.02
+
+# 継続監視（30秒間隔）
+ts-node custom/monitoring/flexible-dex-monitor.ts --tokens=WHYPE,UBTC --monitor --interval=30
+```
+
+### 設定ファイルの構造
+
+#### DEX設定 (`config/dex-config.json`)
+- **ネットワーク別設定**: メインネット・テストネット対応
+- **プロトコル対応**: Uniswap V2/V3、Balancer、Curve等
+- **機能別設定**: クォート・スワップ関数の定義
+- **動的追加**: 新しいDEXを設定ファイルで簡単追加
+
+#### トークン設定 (`config/token-config.json`)
+- **トークン情報**: シンボル、アドレス、decimals等
+- **カテゴリ分類**: native、stablecoin、bridged等
+- **価格フィード**: 外部オラクル統合設定
+
+### カスタムDEXの追加
+
+```json
+{
+  "networks": {
+    "hyperevm-mainnet": {
+      "dexes": {
+        "new_dex_v2": {
+          "name": "New DEX V2",
+          "protocol": "uniswap-v2",
+          "router": "0x新しいルーターアドレス",
+          "abi": "./abi/UniV2Router.json",
+          "quoteFunctions": {
+            "getAmountsOut": {
+              "inputs": ["uint256", "address[]"],
+              "outputs": ["uint256[]"]
+            }
+          },
+          "type": "v2",
+          "status": "active"
+        }
+      }
+    }
+  }
+}
 ```
 
 ## 🚀 動的ガス価格制御機能

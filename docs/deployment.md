@@ -40,7 +40,7 @@ HYPEREVM_RPC_URL=https://rpc.hyperliquid.xyz/evm
 CHAIN_ID=999
 
 # セキュリティ設定
-PRIVATE_KEY=0x...
+PRIVATE_KEY=YOUR_PRIVATE_KEY
 ```
 
 #### 2.2.2 環境別設定

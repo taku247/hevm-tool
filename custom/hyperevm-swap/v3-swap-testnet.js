@@ -1,4 +1,6 @@
 const { ethers } = require('ethers');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 /**
@@ -18,17 +20,8 @@ class HyperSwapV3 {
       positionManager: '0x09Aca834543b5790DB7a52803d5F9d48c5b87e80'
     };
     
-    // テストネットトークン
-    this.tokens = {
-      'HSPX': '0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122',
-      'xHSPX': '0x91483330b5953895757b65683d1272d86d6430B3',
-      'WETH': '0xADcb2f358Eae6492F61A5F87eb8893d09391d160',
-      'PURR': '0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82',
-      'JEFF': '0xbF7C8201519EC22512EB1405Db19C427DF64fC91',
-      'CATBAL': '0x26272928f2395452090143Cf347aa85f78cDa3E8',
-      'HFUN': '0x37adB2550b965851593832a6444763eeB3e1d1Ec',
-      'POINTS': '0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe'
-    };
+    // トークン設定をconfig/token-config.jsonから読み込み
+    this.loadTokenConfig();
     
     // 手数料ティア
     this.feeTiers = {
@@ -180,6 +173,54 @@ class HyperSwapV3 {
         ]
       }
     ];
+  }
+  
+  /**
+   * トークン設定読み込み
+   */
+  loadTokenConfig() {
+    try {
+      const configPath = path.join(__dirname, '../../config/token-config.json');
+      const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      
+      // テストネット用のトークン情報を取得
+      const testnetTokens = configData.networks['hyperevm-testnet'].tokens;
+      
+      // アドレスマップとdecimalsマップを作成
+      this.tokens = {};
+      this.tokenDecimals = {};
+      
+      for (const [symbol, tokenInfo] of Object.entries(testnetTokens)) {
+        this.tokens[symbol] = tokenInfo.address;
+        this.tokenDecimals[symbol] = tokenInfo.decimals;
+      }
+      
+      // 設定読み込み成功
+      
+    } catch (error) {
+      // 設定読み込み失敗時はフォールバック
+      // フォールバック: 従来の設定
+      this.tokens = {
+        'HSPX': '0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122',
+        'xHSPX': '0x91483330b5953895757b65683d1272d86d6430B3',
+        'WETH': '0xADcb2f358Eae6492F61A5F87eb8893d09391d160',
+        'PURR': '0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82',
+        'JEFF': '0xbF7C8201519EC22512EB1405Db19C427DF64fC91',
+        'CATBAL': '0x26272928f2395452090143Cf347aa85f78cDa3E8',
+        'HFUN': '0x37adB2550b965851593832a6444763eeB3e1d1Ec',
+        'POINTS': '0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe'
+      };
+      this.tokenDecimals = {
+        'HSPX': 18,
+        'xHSPX': 18,
+        'WETH': 18,
+        'PURR': 18,
+        'JEFF': 18,
+        'CATBAL': 18,
+        'HFUN': 18,
+        'POINTS': 18
+      };
+    }
   }
   
   /**
@@ -487,11 +528,11 @@ async function main() {
   
   if (args.includes('--help') || args.length === 0) {
     console.log(`
-🔄 HyperSwap V3 スワップツール
+🔄 HyperSwap V3 スワップツール (テストネット)
 
 使用方法:
-  node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100
-  node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
+  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100
+  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
 
 オプション:
   --tokenIn     入力トークン（必須）
@@ -513,13 +554,13 @@ async function main() {
 
 例:
   # 100 HSPX → WETH（最良レート自動選択）
-  node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100
+  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100
   
   # 5bps手数料ティア指定
-  node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
+  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
   
   # レートのみ確認
-  node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --quote-only
+  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100 --quote-only
 `);
     return;
   }

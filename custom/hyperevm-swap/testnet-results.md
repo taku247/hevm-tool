@@ -111,7 +111,7 @@
 
 ```bash
 # 残高確認
-node custom/hyperevm-swap/faucet-guide.js --balance 0x612FA1f3113451F7E6803DfC3A8498f0736E3bc5
+node custom/hyperevm-swap/faucet-guide.js --balance YOUR_WALLET_ADDRESS
 
 # セットアップ確認
 node custom/hyperevm-swap/faucet-guide.js --check

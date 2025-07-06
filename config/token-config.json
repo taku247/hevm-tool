@@ -1,0 +1,183 @@
+{
+  "networks": {
+    "hyperevm-mainnet": {
+      "chainId": 999,
+      "tokens": {
+        "HYPE": {
+          "symbol": "HYPE",
+          "name": "Hyperliquid Native Token",
+          "address": "0x0000000000000000000000000000000000000000",
+          "decimals": 18,
+          "type": "native",
+          "coingeckoId": "hyperliquid",
+          "category": "layer1"
+        },
+        "WHYPE": {
+          "symbol": "WHYPE", 
+          "name": "Wrapped HYPE",
+          "address": "0x5555555555555555555555555555555555555555",
+          "decimals": 18,
+          "type": "wrapped-native",
+          "wrappedToken": "HYPE",
+          "category": "defi"
+        },
+        "UBTC": {
+          "symbol": "UBTC",
+          "name": "Universal Bitcoin",
+          "address": "0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463",
+          "decimals": 8,
+          "type": "bridged",
+          "originalChain": "bitcoin",
+          "category": "btc-derivative"
+        },
+        "UETH": {
+          "symbol": "UETH",
+          "name": "Universal Ethereum",
+          "address": "0xBe6727B535545C67d5cAa73dEa54865B92CF7907",
+          "decimals": 18,
+          "type": "bridged",
+          "originalChain": "ethereum",
+          "category": "eth-derivative"
+        },
+        "ADHD": {
+          "symbol": "ADHD",
+          "name": "ADHD Token",
+          "address": "0xE3D5F45d97fee83B48c85E00c8359A2E07D68Fee",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "meme"
+        },
+        "BUDDY": {
+          "symbol": "BUDDY",
+          "name": "BUDDY Token",
+          "address": "0x47bb061C0204Af921F43DC73C7D7768d2672DdEE",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "meme"
+        },
+        "CATBAL": {
+          "symbol": "CATBAL",
+          "name": "CATBAL Token",
+          "address": "0x11735dBd0B97CfA7Accf47d005673BA185f7fd49",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "meme"
+        },
+        "HFUN": {
+          "symbol": "HFUN",
+          "name": "HFUN Token",
+          "address": "0xa320D9f65ec992EfF38622c63627856382Db726c",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "meme"
+        }
+      }
+    },
+    "hyperevm-testnet": {
+      "chainId": 998,
+      "tokens": {
+        "HYPE": {
+          "symbol": "HYPE",
+          "name": "Hyperliquid Native Token (Testnet)",
+          "address": "0x0000000000000000000000000000000000000000",
+          "decimals": 18,
+          "type": "native",
+          "category": "testnet"
+        },
+        "WHYPE": {
+          "symbol": "WHYPE",
+          "name": "Wrapped HYPE (Testnet)",
+          "address": "0x5555555555555555555555555555555555555555",
+          "decimals": 18,
+          "type": "wrapped-native",
+          "wrappedToken": "HYPE",
+          "category": "testnet"
+        },
+        "HSPX": {
+          "symbol": "HSPX",
+          "name": "HyperSwap Token (Testnet)",
+          "address": "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "testnet"
+        },
+        "xHSPX": {
+          "symbol": "xHSPX",
+          "name": "Staked HSPX (Testnet)",
+          "address": "0x91483330b5953895757b65683d1272d86d6430B3",
+          "decimals": 18,
+          "type": "staked",
+          "category": "testnet"
+        },
+        "WETH": {
+          "symbol": "WETH",
+          "name": "Wrapped Ether (Testnet)",
+          "address": "0xADcb2f358Eae6492F61A5F87eb8893d09391d160",
+          "decimals": 18,
+          "type": "wrapped",
+          "category": "testnet"
+        },
+        "PURR": {
+          "symbol": "PURR",
+          "name": "PURR Token (Testnet)",
+          "address": "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "testnet"
+        },
+        "JEFF": {
+          "symbol": "JEFF",
+          "name": "JEFF Token (Testnet)",
+          "address": "0xbF7C8201519EC22512EB1405Db19C427DF64fC91",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "testnet"
+        },
+        "CATBAL": {
+          "symbol": "CATBAL",
+          "name": "CATBAL Token (Testnet)",
+          "address": "0x26272928f2395452090143Cf347aa85f78cDa3E8",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "testnet"
+        },
+        "HFUN": {
+          "symbol": "HFUN",
+          "name": "HFUN Token (Testnet)",
+          "address": "0x37adB2550b965851593832a6444763eeB3e1d1Ec",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "testnet"
+        },
+        "POINTS": {
+          "symbol": "POINTS",
+          "name": "Points Token (Testnet)",
+          "address": "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe",
+          "decimals": 18,
+          "type": "erc20",
+          "category": "testnet"
+        }
+      }
+    }
+  },
+  "commonPairs": [
+    ["WHYPE", "UBTC"],
+    ["WHYPE", "UETH"],
+    ["UBTC", "UETH"]
+  ],
+  "priceFeeds": {
+    "HYPE": {
+      "sources": ["coingecko", "coinmarketcap"],
+      "fallback": "on-chain-oracle"
+    },
+    "UBTC": {
+      "sources": ["chainlink", "coingecko"],
+      "benchmark": "BTC"
+    }
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-07-05",
+    "description": "HyperEVM トークン設定ファイル - ネットワーク横断対応"
+  }
+}

@@ -366,3 +366,256 @@ node custom/hyperevm-swap/security-risks-detail.js
 - **秘密鍵管理**: テスト用秘密鍵のみ使用してください
 - **資金の損失リスク**: テストネットであっても実装テスト時は小額から開始
 - **スリッページ**: 流動性が少ない場合は高めのスリッページ設定が必要
+
+## 📝 v3-swap.js 詳細解説
+
+### 概要
+`v3-swap.js`はHyperSwap V3（Concentrated Liquidity）の包括的なスワップ実装です。Uniswap V3のアーキテクチャに基づき、HyperLiquid Testnet用に最適化されています。
+
+### 主要機能
+
+#### 1. **HyperSwapV3クラス**
+- **設定管理**: テストネット用のコントラクトアドレスとトークン情報
+- **手数料ティア管理**: 1bps, 5bps, 30bps, 100bpsの4段階
+- **ABI定義**: SwapRouter02、Quoter、ERC20の必要最小限のABI
+
+#### 2. **getQuote()メソッド**
+```javascript
+async getQuote(tokenInSymbol, tokenOutSymbol, amountIn, fee = null)
+```
+- 複数手数料ティアを並列でチェック
+- 最良レートを自動選択
+- 各ティアの流動性存在確認
+- 詳細なレート比較情報を返却
+
+#### 3. **swap()メソッド**
+```javascript
+async swap(tokenInSymbol, tokenOutSymbol, amountIn, fee = null, slippagePercent = 0.5)
+```
+**実行フロー:**
+1. **残高確認**: 十分な入力トークンがあるか
+2. **レート取得**: 最良手数料ティアを選択
+3. **Approval処理**: 必要に応じて無制限Approval
+4. **スワップ実行**: SwapRouter02経由で安全に実行
+5. **結果確認**: 出力トークンの残高確認
+
+#### 4. **セキュリティ機能**
+- **スリッページ保護**: `calculateMinAmountOut()`でカスタマイズ可能
+- **Deadline設定**: トランザクションは20分後に自動失効
+- **残高検証**: スワップ前に十分な残高を確認
+- **Approval最適化**: 無制限Approvalで効率化
+
+### CLI使用例
+
+#### レート確認のみ
+```bash
+node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --quote-only
+```
+
+#### 実際のスワップ
+```bash
+# 最良レート自動選択
+node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100
+
+# 手数料ティア指定
+node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
+
+# スリッページ調整
+node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --slippage 2.0
+```
+
+### 実装の特徴
+
+#### ✅ 良い点
+1. **完全なテストネット対応**: 全アドレス・設定がテストネット用
+2. **自動最適化**: 手数料ティアを自動で比較・選択
+3. **詳細なログ出力**: デバッグしやすい情報表示
+4. **堅牢なエラーハンドリング**: 各ステップでの適切な例外処理
+5. **CLI統合**: コマンドラインから簡単に実行可能
+
+#### ⚠️ 制限事項
+1. **固定decimals**: 全トークンを18 decimalsと仮定（実際と異なる場合あり）
+2. **シングルホップのみ**: マルチホップ（A→B→C）は未実装
+3. **価格影響未計算**: 大口取引の価格インパクト表示なし
+
+### 内部アーキテクチャ
+
+#### SwapRouter02パラメータ構造
+```javascript
+const params = {
+  tokenIn: address,           // 入力トークンアドレス
+  tokenOut: address,          // 出力トークンアドレス
+  fee: uint24,               // 手数料ティア（100-10000）
+  recipient: address,         // 受取アドレス
+  deadline: uint256,         // 有効期限（UNIXタイムスタンプ）
+  amountIn: uint256,         // 入力量
+  amountOutMinimum: uint256, // 最小出力量（スリッページ保護）
+  sqrtPriceLimitX96: uint160 // 価格制限（0=制限なし）
+};
+```
+
+#### 手数料ティア選択ロジック
+```javascript
+// 全ティアでquoteを取得
+const feesToTest = fee ? [parseFee(fee)] : [100, 500, 3000, 10000];
+
+// 最良レートを選択
+const best = results.reduce((prev, current) => 
+  current.rate > prev.rate ? current : prev
+);
+```
+
+### トラブルシューティング
+
+#### "No pools found for any fee tier"
+- 原因: 指定トークンペアに流動性がない
+- 解決: 別のトークンペアを試すか、メインネットを検討
+
+#### "Approval失敗"
+- 原因: トークンコントラクトの問題
+- 解決: トークンアドレスが正しいか確認
+
+#### スワップ成功but出力が少ない
+- 原因: スリッページ発生
+- 解決: `--slippage`パラメータを増やす
+
+### 今後の改善提案
+1. **動的decimals**: `token.decimals()`で実際の値を取得
+2. **マルチホップ対応**: 複数経路スワップの実装
+3. **価格影響計算**: 大口取引のインパクト表示
+4. **ガス見積もり表示**: 事前にガスコストを表示
+5. **メインネット切り替え**: 設定ファイルで簡単切り替え
+
+## 📝 v2-swap.js 詳細解説
+
+### 概要
+`v2-swap.js`はHyperSwap V2（AMM - Automated Market Maker）の実装です。Uniswap V2アーキテクチャをベースに、シンプルで信頼性の高いスワップ機能を提供します。
+
+### 主要機能
+
+#### 1. **HyperSwapV2クラス**
+- **設定管理**: テストネット用のコントラクトアドレス
+- **固定手数料**: 0.3%（V2の標準）
+- **ABI定義**: Router、ERC20の必要最小限のABI
+
+#### 2. **getQuote()メソッド**
+```javascript
+async getQuote(tokenInSymbol, tokenOutSymbol, amountIn)
+```
+- `router.getAmountsOut()`でAMM価格計算
+- シンプルな2要素パス（[tokenIn, tokenOut]）
+- リアルタイム流動性プールからの価格取得
+
+#### 3. **swap()メソッド**
+```javascript
+async swap(tokenInSymbol, tokenOutSymbol, amountIn, slippagePercent = 0.5)
+```
+**実行フロー:**
+1. **残高確認**: 十分な入力トークンがあるか
+2. **レート取得**: `getAmountsOut`でAMM計算
+3. **Approval処理**: 必要に応じて無制限Approval
+4. **スワップ実行**: `swapExactTokensForTokens`
+5. **結果確認**: 出力トークンの残高確認
+
+#### 4. **AMM計算式**
+V2は`x * y = k`の定数積公式を使用：
+```
+amountOut = (amountIn * 997 * reserveOut) / (reserveIn * 1000 + amountIn * 997)
+```
+- 997/1000 = 0.3%の手数料を自動的に差し引き
+
+### V2とV3の比較
+
+| 機能 | V2 (このファイル) | V3 |
+|------|------------------|-----|
+| **手数料** | 固定0.3% | 可変（0.01%～1%） |
+| **流動性** | 全価格範囲に均等 | 集中流動性 |
+| **資本効率** | 低い | 高い（最大4000倍） |
+| **実装複雑度** | シンプル | 複雑 |
+| **ガス効率** | 標準 | 最適化済み |
+| **価格精度** | 標準 | 高精度（Q96形式） |
+
+### CLI使用例
+
+#### レート確認のみ
+```bash
+node custom/hyperevm-swap/v2-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --quote-only
+```
+
+#### 実際のスワップ
+```bash
+# デフォルトスリッページ（0.5%）
+node custom/hyperevm-swap/v2-swap.js --tokenIn HSPX --tokenOut WETH --amount 100
+
+# カスタムスリッページ（1%）
+node custom/hyperevm-swap/v2-swap.js --tokenIn WETH --tokenOut PURR --amount 1 --slippage 1.0
+```
+
+### 実装の特徴
+
+#### ✅ V2の利点
+1. **シンプルさ**: 理解しやすいAMM公式
+2. **安定性**: 長期間の実績と検証
+3. **互換性**: 多くのDeFiプロトコルと互換
+4. **流動性**: テストネットでも十分な流動性
+5. **予測可能性**: 固定手数料で計算が簡単
+
+#### ⚠️ V2の制限
+1. **資本効率**: 全価格範囲に流動性分散
+2. **手数料固定**: ボラティリティに応じた調整不可
+3. **スリッページ**: 大口取引で大きくなりやすい
+
+### 内部アーキテクチャ
+
+#### Router関数の構造
+```javascript
+router.swapExactTokensForTokens(
+  amountIn,      // 入力量
+  minAmountOut,  // 最小出力量（スリッページ保護）
+  path,          // [tokenA, tokenB]の配列
+  to,            // 受取アドレス
+  deadline       // 有効期限（UNIXタイムスタンプ）
+);
+```
+
+#### セキュリティ機能
+- **スリッページ保護**: `calculateMinAmountOut()`
+- **Deadline設定**: 20分後に自動失効
+- **無制限Approval**: MaxUint256で効率化
+- **残高検証**: スワップ前の事前チェック
+
+### テスト結果（2024年7月）
+
+**完全動作確認済み**:
+- HSPX/WETH: ✅ レート取得・スワップ成功
+- HSPX/PURR: ✅ レート取得・スワップ成功
+- WETH/PURR: ✅ レート取得・スワップ成功
+- ガス使用量: 約200,000 gas（Approval + Swap）
+
+### トラブルシューティング
+
+#### "Cannot estimate gas"エラー
+- 原因: 流動性不足または入力量が大きすぎる
+- 解決: 小額から試すか、別のペアを使用
+
+#### スリッページエラー
+- 原因: 価格変動が設定値を超過
+- 解決: `--slippage`パラメータを増やす
+
+#### Approval失敗
+- 原因: トークンコントラクトの問題
+- 解決: トークンアドレスが正しいか確認
+
+### V2選択の指針
+
+**V2を選ぶべき場合**:
+- シンプルな実装が必要
+- 固定手数料で問題ない
+- 安定した流動性がある
+- 実績のある技術を使いたい
+
+**V3を検討すべき場合**:
+- 資本効率を最大化したい
+- 手数料を柔軟に設定したい
+- 大口取引のスリッページを最小化したい
+- 最新技術を活用したい

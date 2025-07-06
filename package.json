@@ -12,9 +12,33 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --watchAll=false",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    
+    "balance": "node custom/utils/check-token-balances.js",
+    "balance:testnet": "node custom/utils/check-token-balances.js --network testnet",
+    "balance:mainnet": "node custom/utils/check-token-balances.js --network mainnet",
+    
+    "swap:v2:testnet": "node custom/hyperevm-swap/v2-swap-testnet.js",
+    "swap:v3:testnet": "node custom/hyperevm-swap/v3-swap-testnet.js",
+    "swap:v2:testnet:quote": "node custom/hyperevm-swap/v2-swap-testnet.js --quote-only",
+    "swap:v3:testnet:quote": "node custom/hyperevm-swap/v3-swap-testnet.js --quote-only",
+    
+    "faucet": "node custom/hyperevm-swap/faucet-guide.js",
+    "faucet:info": "node custom/hyperevm-swap/faucet-guide.js --info",
+    "faucet:generate": "node custom/hyperevm-swap/faucet-guide.js --generate",
+    "faucet:check": "node custom/hyperevm-swap/faucet-guide.js --check",
+    
+    "monitor:dex": "ts-node custom/monitoring/dex-rate-monitor.ts",
+    "monitor:rate": "ts-node custom/monitoring/simple-rate-check.ts",
+    "monitor:flexible": "ts-node custom/monitoring/flexible-dex-monitor.ts",
+    
+    "investigate:decimals": "node custom/investigate/get-token-decimals.js",
+    "investigate:v3": "node custom/investigate/improved-v3-test.js",
+    "investigate:compare": "node custom/investigate/test-v1-v2-comparison.js"
   },
   "dependencies": {
+    "@uniswap/sdk-core": "^7.7.2",
+    "@uniswap/smart-order-router": "^4.22.5",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ethers": "^5.7.2",

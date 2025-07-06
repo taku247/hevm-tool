@@ -11,7 +11,7 @@
 
 import { UniversalContractUtils } from '../../templates/contract-utils';
 import { ethers } from 'ethers';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
 // 環境変数を読み込み
 dotenv.config();
@@ -205,12 +205,17 @@ async function getV2Rate(
 
     const amounts = result.result as string[];
     const amountOut = amounts[1];
+    
+    if (!amountOut) {
+      throw new Error('Invalid amount out from DEX');
+    }
+    
     const rate = parseFloat(ethers.utils.formatEther(amountOut)) / parseFloat(ethers.utils.formatEther(amountIn));
 
     return {
       dex: dexConfig.name,
-      tokenIn,
-      tokenOut,
+      tokenIn: tokenIn || '',
+      tokenOut: tokenOut || '',
       amountIn,
       amountOut,
       rate,
@@ -352,13 +357,17 @@ function displayRates(results: RateResult[], format: string = 'table'): void {
   console.log('└─────────────────────────┴─────────────────┴──────────────┴─────────────┘');
 
   // 最良レートをハイライト
-  const bestRate = sortedResults[0];
-  const worstRate = sortedResults[sortedResults.length - 1];
-  const spread = ((bestRate.rate - worstRate.rate) / worstRate.rate * 100);
-
-  console.log(`\n🏆 最良レート: ${bestRate.dex} (${bestRate.rate.toFixed(6)})`);
-  if (sortedResults.length > 1) {
-    console.log(`📊 価格差: ${spread.toFixed(2)}%`);
+  if (sortedResults.length > 0) {
+    const bestRate = sortedResults[0];
+    const worstRate = sortedResults[sortedResults.length - 1];
+    
+    if (bestRate && worstRate) {
+      const spread = ((bestRate.rate - worstRate.rate) / worstRate.rate * 100);
+      console.log(`\n🏆 最良レート: ${bestRate.dex} (${bestRate.rate.toFixed(6)})`);
+      if (sortedResults.length > 1) {
+        console.log(`📊 価格差: ${spread.toFixed(2)}%`);
+      }
+    }
   }
   console.log(`⏰ 更新時刻: ${new Date().toLocaleString()}\n`);
 }
@@ -372,13 +381,16 @@ function checkAlerts(results: RateResult[], threshold: number): void {
   const sortedResults = [...results].sort((a, b) => b.rate - a.rate);
   const bestRate = sortedResults[0];
   const worstRate = sortedResults[sortedResults.length - 1];
-  const spread = (bestRate.rate - worstRate.rate) / worstRate.rate;
+  
+  if (bestRate && worstRate) {
+    const spread = (bestRate.rate - worstRate.rate) / worstRate.rate;
 
-  if (spread > threshold) {
-    console.log(`🚨 アラート: ${(spread * 100).toFixed(2)}% の価格差を検出!`);
-    console.log(`   最良: ${bestRate.dex} (${bestRate.rate.toFixed(6)})`);
-    console.log(`   最悪: ${worstRate.dex} (${worstRate.rate.toFixed(6)})`);
-    console.log(`   アービトラージ機会あり!`);
+    if (spread > threshold) {
+      console.log(`🚨 アラート: ${(spread * 100).toFixed(2)}% の価格差を検出!`);
+      console.log(`   最良: ${bestRate.dex} (${bestRate.rate.toFixed(6)})`);
+      console.log(`   最悪: ${worstRate.dex} (${worstRate.rate.toFixed(6)})`);
+      console.log(`   アービトラージ機会あり!`);
+    }
   }
 }
 
@@ -452,10 +464,12 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const [tokenIn, tokenOut] = args.tokens.split(',');
+  const tokens = args.tokens.split(',');
+  const tokenIn = tokens[0];
+  const tokenOut = tokens[1];
   
-  if (!TOKEN_ADDRESSES[tokenIn] || !TOKEN_ADDRESSES[tokenOut]) {
-    console.error(`❌ サポートされていないトークン: ${tokenIn}, ${tokenOut}`);
+  if (!tokenIn || !tokenOut || !TOKEN_ADDRESSES[tokenIn] || !TOKEN_ADDRESSES[tokenOut]) {
+    console.error(`❌ サポートされていないトークン: ${tokenIn || 'undefined'}, ${tokenOut || 'undefined'}`);
     console.error(`サポート済み: ${Object.keys(TOKEN_ADDRESSES).join(', ')}`);
     process.exit(1);
   }
@@ -470,8 +484,8 @@ async function main(): Promise<void> {
     if (args.monitor) {
       await startMonitoring(
         utils,
-        tokenIn,
-        tokenOut,
+        tokenIn as string,
+        tokenOut as string,
         amount,
         args.interval || 30,
         args.alertThreshold || 0.05,
@@ -479,7 +493,7 @@ async function main(): Promise<void> {
         outputFormat
       );
     } else {
-      const results = await getAllRates(utils, tokenIn, tokenOut, amount, args.dex);
+      const results = await getAllRates(utils, tokenIn as string, tokenOut as string, amount, args.dex);
       displayRates(results, outputFormat);
     }
 

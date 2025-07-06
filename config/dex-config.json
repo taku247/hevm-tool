@@ -1,0 +1,144 @@
+{
+  "networks": {
+    "hyperevm-mainnet": {
+      "chainId": 999,
+      "rpcUrl": "https://rpc.hyperliquid.xyz/evm",
+      "dexes": {
+        "hyperswap_v2": {
+          "name": "HyperSwap V2",
+          "protocol": "uniswap-v2",
+          "router": "0xb4a9C4e6Ea8E2191d2FA5B380452a634Fb21240A",
+          "factory": "0x724412C00059bf7d6ee7d4a1d0D5cd4de3ea1C48",
+          "abi": "./abi/UniV2Router.json",
+          "quoteFunctions": {
+            "getAmountsOut": {
+              "inputs": ["uint256", "address[]"],
+              "outputs": ["uint256[]"],
+              "description": "指定量の入力トークンに対する出力量を計算"
+            },
+            "getAmountsIn": {
+              "inputs": ["uint256", "address[]"], 
+              "outputs": ["uint256[]"],
+              "description": "指定量の出力トークンに必要な入力量を計算"
+            }
+          },
+          "swapFunctions": {
+            "swapExactTokensForTokens": {
+              "inputs": ["uint256", "uint256", "address[]", "address", "uint256"],
+              "outputs": ["uint256[]"],
+              "description": "正確な入力量でのスワップ"
+            }
+          },
+          "feeRate": 0.003,
+          "type": "v2",
+          "status": "active"
+        },
+        "hyperswap_v3": {
+          "name": "HyperSwap V3",
+          "protocol": "uniswap-v3",
+          "quoter": "0x03A918028f22D9E1473B7959C927AD7425A45C7C",
+          "swapRouter": "0x03A918028f22D9E1473B7959C927AD7425A45C7C",
+          "abi": "./abi/KittenQuoterV2.json",
+          "quoteFunctions": {
+            "quoteExactInputSingle": {
+              "inputs": ["address", "address", "uint24", "uint256", "uint160"],
+              "outputs": ["uint256"],
+              "description": "単一プールでの正確な入力量クォート"
+            },
+            "quoteExactOutputSingle": {
+              "inputs": ["address", "address", "uint24", "uint256", "uint160"],
+              "outputs": ["uint256"],
+              "description": "単一プールでの正確な出力量クォート"
+            }
+          },
+          "swapFunctions": {
+            "exactInputSingle": {
+              "inputs": ["tuple"],
+              "outputs": ["uint256"],
+              "description": "単一プールでの正確な入力スワップ"
+            }
+          },
+          "feeTiers": [100, 500, 2500, 10000],
+          "type": "v3",
+          "status": "active"
+        },
+        "kittenswap_v2": {
+          "name": "KittenSwap V2",
+          "protocol": "uniswap-v2",
+          "router": "0xd6eeffbdaf6503ad6539cf8f337d79bebbd40802",
+          "factory": "0xDa12F450580A4cc485C3b501BAB7b0B3cbc3B31B",
+          "abi": "./abi/UniV2Router.json",
+          "quoteFunctions": {
+            "getAmountsOut": {
+              "inputs": ["uint256", "address[]"],
+              "outputs": ["uint256[]"],
+              "description": "指定量の入力トークンに対する出力量を計算"
+            }
+          },
+          "swapFunctions": {
+            "swapExactTokensForTokens": {
+              "inputs": ["uint256", "uint256", "address[]", "address", "uint256"],
+              "outputs": ["uint256[]"],
+              "description": "正確な入力量でのスワップ"
+            }
+          },
+          "feeRate": 0.003,
+          "type": "v2",
+          "status": "active"
+        },
+        "kittenswap_cl": {
+          "name": "KittenSwap CL (V3)",
+          "protocol": "uniswap-v3",
+          "quoter": "0xd9949cB0655E8D5167373005Bd85f814c8E0C9BF",
+          "swapRouter": "0xd9949cB0655E8D5167373005Bd85f814c8E0C9BF",
+          "abi": "./abi/KittenQuoterV2.json",
+          "quoteFunctions": {
+            "quoteExactInputSingle": {
+              "inputs": ["address", "address", "uint24", "uint256", "uint160"],
+              "outputs": ["uint256"],
+              "description": "単一プールでの正確な入力量クォート"
+            }
+          },
+          "feeTiers": [100, 500, 2500, 10000],
+          "type": "v3",
+          "status": "active"
+        }
+      }
+    },
+    "hyperevm-testnet": {
+      "chainId": 998,
+      "rpcUrl": "https://rpc.hyperliquid-testnet.xyz/evm",
+      "dexes": {
+        "hyperswap_v2_testnet": {
+          "name": "HyperSwap V2 (Testnet)",
+          "protocol": "uniswap-v2",
+          "router": "0x85aA63EB2ab9BaAA74eAd7e7f82A571d74901853",
+          "factory": "0xA028411927E2015A363014881a4404C636218fb1",
+          "abi": "./abi/UniV2Router.json",
+          "quoteFunctions": {
+            "getAmountsOut": {
+              "inputs": ["uint256", "address[]"],
+              "outputs": ["uint256[]"],
+              "description": "指定量の入力トークンに対する出力量を計算"
+            }
+          },
+          "feeRate": 0.003,
+          "type": "v2",
+          "status": "active"
+        }
+      }
+    }
+  },
+  "defaultNetwork": "hyperevm-mainnet",
+  "supportedProtocols": [
+    "uniswap-v2",
+    "uniswap-v3",
+    "balancer-v2",
+    "curve-v1"
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-07-05",
+    "description": "HyperEVM DEX設定ファイル - 柔軟なDEX統合のための設定ベース設計"
+  }
+}
