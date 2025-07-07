@@ -156,28 +156,66 @@ const liquidity = computeConcentratedLiquidity();    // 集中流動性計算
 
 ### 実装済み機能
 - [x] V2スワップ（完全実装・テスト済み）
-- [x] V3スワップ（実装済み・流動性制限あり）
+- [x] V3スワップ（Router01/Router02両対応）
 - [x] レート取得とスリッページ計算
 - [x] 手数料ティア自動選択（V3）
 - [x] ガス最適化
 - [x] Router安全性機能
 - [x] テストケース
+- [x] ChatGPT推奨修正完全適用
+
+### 🛡️ ChatGPT推奨修正の実装状況
+
+すべてのスクリプトに以下の修正が適用済み：
+
+1. **未来deadline設定** ✅
+   ```javascript
+   const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20分後
+   ```
+
+2. **callStatic事前テスト** ✅
+   ```javascript
+   try {
+     const staticResult = await router.callStatic.exactInputSingle(params);
+     console.log(`✅ callStatic成功: ${ethers.utils.formatUnits(staticResult, 18)}`);
+   } catch (staticError) {
+     throw new Error(`callStatic失敗: ${staticError.message}`);
+   }
+   ```
+
+3. **アドレス小文字化** ✅
+   ```javascript
+   return address.toLowerCase(); // checksum validation問題解消
+   ```
+
+4. **ガス保護機能** ✅
+   ```javascript
+   minHypeBalance: ethers.utils.parseEther("0.1"), // 最低0.1 HYPE保持
+   ```
+
+5. **ABI統一管理** ✅
+   ```javascript
+   this.routerABI = require('../../abi/HyperSwapV2Router.json');
+   this.swapRouterABI = require('../../abi/HyperSwapV3SwapRouter01.json');
+   ```
 
 ### 🧪 テストネット検証結果
 
-#### **動作確認完了（2024年7月）**
+#### **動作確認完了（2025年1月）**
 
-**V2スワップ - ✅ 完全動作**
-- HSPX → WETH: レート取得・スワップ実行 成功
-- HSPX → PURR: レート取得・スワップ実行 成功  
-- WETH → PURR: レート取得・スワップ実行 成功
-- 流動性: 十分な流動性を確認
-- ガス使用量: ~200,000 gas（Approval + Swap）
+**V2スワップ - ⚠️ 流動性制限**
+- レート取得: ✅ 正常動作（1 WETH = 1256.263109 PURR）
+- スワップ実行: ❌ callStatic失敗（流動性不足の可能性）
+- 設定状態: `"status": "limited"` に更新
 
-**V3スワップ - ⚠️ 制限あり**
-- HSPX/WETH: 全手数料ティア（1bps, 5bps, 30bps, 100bps）でプールなし
-- 原因: テストネットのV3流動性が限定的
-- 状況: メインネットでは利用可能な可能性
+**V3スワップ - ✅ 完全動作**
+- **Router01（deadline必須）**: ✅ 101,038 gas成功
+  - 0.001 WETH → 1.344896967199230134 PURR
+  - 手数料ティア: 5bps最適
+- **Router02（deadline無し）**: ✅ 101,341 gas成功
+  - 0.001 WETH → 1.344896033923951587 PURR
+  - 手数料ティア: 5bps最適
+- 全手数料ティア（1bps, 5bps, 30bps, 100bps）でプール確認
 
 **コントラクト確認**
 - V2 Router: ✅ 動作確認済み
@@ -210,16 +248,22 @@ const liquidity = computeConcentratedLiquidity();    // 集中流動性計算
 3. **レート取得テスト**
    ```bash
    # V2レート確認（ガス不要）
-   node custom/hyperevm-swap/v2-swap.js --tokenIn HSPX --tokenOut WETH --amount 10 --quote-only
+   node custom/hyperevm-swap/v2-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 10 --quote-only
    
-   # V3レート確認（ガス不要）  
-   node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 10 --quote-only
+   # V3レート確認（ガス不要） - Router01版 
+   node custom/hyperevm-swap/v3-swap-testnet-router01.js --tokenIn WETH --tokenOut PURR --amount 0.001 --quote-only
+   
+   # V3レート確認（ガス不要） - Router02版
+   node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn WETH --tokenOut PURR --amount 0.001 --quote-only
    ```
 
 4. **実スワップテスト**
    ```bash
-   # ETH取得後に実行
-   node custom/hyperevm-swap/v2-swap.js --tokenIn HSPX --tokenOut WETH --amount 1 --slippage 2.0
+   # ETH取得後に実行（V2）
+   node custom/hyperevm-swap/v2-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 1 --slippage 2.0
+   
+   # ETH取得後に実行（V3 Router01）
+   node custom/hyperevm-swap/v3-swap-testnet-router01.js --tokenIn WETH --tokenOut PURR --amount 0.001 --slippage 0.5
    ```
 
 #### **期待される結果**
@@ -249,42 +293,67 @@ const liquidity = computeConcentratedLiquidity();    // 集中流動性計算
 #### V2スワップの例
 ```bash
 # HSPX → WETH スワップ
-node custom/hyperevm-swap/v2-swap.js \
+node custom/hyperevm-swap/v2-swap-testnet.js \
   --tokenIn HSPX \
   --tokenOut WETH \
   --amount 100 \
   --slippage 0.5
 
-# WETH → PURR スワップ
-node custom/hyperevm-swap/v2-swap.js \
+# WETH → PURR スワップ  
+node custom/hyperevm-swap/v2-swap-testnet.js \
   --tokenIn WETH \
   --tokenOut PURR \
   --amount 1 \
   --slippage 1.0
 ```
 
-#### V3スワップの例
+#### V3スワップの例（Router01版）
 ```bash
-# HSPX → WETH スワップ（V3、自動最良レート選択）
-node custom/hyperevm-swap/v3-swap.js \
-  --tokenIn HSPX \
-  --tokenOut WETH \
-  --amount 100 \
+# WETH → PURR スワップ（V3 Router01、deadline必須）
+node custom/hyperevm-swap/v3-swap-testnet-router01.js \
+  --tokenIn WETH \
+  --tokenOut PURR \
+  --amount 0.001 \
   --slippage 0.5
 
 # 特定手数料ティア指定（5bps）
-node custom/hyperevm-swap/v3-swap.js \
-  --tokenIn HSPX \
-  --tokenOut WETH \
-  --amount 100 \
+node custom/hyperevm-swap/v3-swap-testnet-router01.js \
+  --tokenIn WETH \
+  --tokenOut PURR \
+  --amount 0.001 \
   --fee 500 \
   --slippage 0.5
 
 # 全手数料ティア比較（quote-only）
-node custom/hyperevm-swap/v3-swap.js \
-  --tokenIn HSPX \
-  --tokenOut WETH \
-  --amount 100 \
+node custom/hyperevm-swap/v3-swap-testnet-router01.js \
+  --tokenIn WETH \
+  --tokenOut PURR \
+  --amount 0.001 \
+  --quote-only
+```
+
+#### V3スワップの例（Router02版）
+```bash
+# WETH → PURR スワップ（V3 Router02、deadline無し）
+node custom/hyperevm-swap/v3-swap-testnet-router02.js \
+  --tokenIn WETH \
+  --tokenOut PURR \
+  --amount 0.001 \
+  --slippage 0.5
+
+# 特定手数料ティア指定（5bps）
+node custom/hyperevm-swap/v3-swap-testnet-router02.js \
+  --tokenIn WETH \
+  --tokenOut PURR \
+  --amount 0.001 \
+  --fee 500 \
+  --slippage 0.5
+
+# 全手数料ティア比較（quote-only）
+node custom/hyperevm-swap/v3-swap-testnet-router02.js \
+  --tokenIn WETH \
+  --tokenOut PURR \
+  --amount 0.001 \
   --quote-only
 ```
 
@@ -326,14 +395,15 @@ node custom/hyperevm-swap/v3-swap.js \
 ### コード構造
 ```
 custom/hyperevm-swap/
-├── v2-swap.js                 # V2 AMM実装
-├── v3-swap.js                 # V3 CL実装
-├── v2-direct-complexity.js   # V2直接実装の複雑さ解説
-├── v3-direct-complexity.js   # V3直接実装の超複雑さ解説
-├── security-risks-detail.js  # セキュリティリスク詳細解説
-├── direct-pool-example.js    # 直接プール比較（教育用）
-├── test-connection.js        # 接続テスト
-└── faucet-guide.js           # テストネット準備
+├── v2-swap-testnet.js             # V2 AMM実装（ChatGPT修正適用済み）
+├── v3-swap-testnet-router01.js    # V3 Router01版（deadline必須）
+├── v3-swap-testnet-router02.js    # V3 Router02版（deadline無し）
+├── v2-direct-complexity.js        # V2直接実装の複雑さ解説
+├── v3-direct-complexity.js        # V3直接実装の超複雑さ解説
+├── security-risks-detail.js       # セキュリティリスク詳細解説
+├── direct-pool-example.js         # 直接プール比較（教育用）
+├── test-connection.js             # 接続テスト
+└── faucet-guide.js               # テストネット準備
 ```
 
 ### 直接プールスワップ解説ファイル
@@ -367,10 +437,14 @@ node custom/hyperevm-swap/security-risks-detail.js
 - **資金の損失リスク**: テストネットであっても実装テスト時は小額から開始
 - **スリッページ**: 流動性が少ない場合は高めのスリッページ設定が必要
 
-## 📝 v3-swap.js 詳細解説
+## 📝 V3スワップスクリプト詳細解説
 
 ### 概要
-`v3-swap.js`はHyperSwap V3（Concentrated Liquidity）の包括的なスワップ実装です。Uniswap V3のアーキテクチャに基づき、HyperLiquid Testnet用に最適化されています。
+V3スワップは2つのRouterバージョンに分離されています：
+- `v3-swap-testnet-router01.js`: deadline必須版（8パラメータ）
+- `v3-swap-testnet-router02.js`: deadline無し版（7パラメータ）
+
+両方ともHyperSwap V3（Concentrated Liquidity）の完全な実装で、Uniswap V3のアーキテクチャに基づき、HyperLiquid Testnet用に最適化されています。
 
 ### 主要機能
 
@@ -409,19 +483,23 @@ async swap(tokenInSymbol, tokenOutSymbol, amountIn, fee = null, slippagePercent 
 
 #### レート確認のみ
 ```bash
-node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --quote-only
+# Router01版
+node custom/hyperevm-swap/v3-swap-testnet-router01.js --tokenIn WETH --tokenOut PURR --amount 0.001 --quote-only
+
+# Router02版
+node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn WETH --tokenOut PURR --amount 0.001 --quote-only
 ```
 
 #### 実際のスワップ
 ```bash
-# 最良レート自動選択
-node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100
+# Router01版（最良レート自動選択）
+node custom/hyperevm-swap/v3-swap-testnet-router01.js --tokenIn WETH --tokenOut PURR --amount 0.001
 
-# 手数料ティア指定
-node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
+# Router02版（手数料ティア指定）
+node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn WETH --tokenOut PURR --amount 0.001 --fee 500
 
 # スリッページ調整
-node custom/hyperevm-swap/v3-swap.js --tokenIn HSPX --tokenOut WETH --amount 100 --slippage 2.0
+node custom/hyperevm-swap/v3-swap-testnet-router01.js --tokenIn WETH --tokenOut PURR --amount 0.001 --slippage 2.0
 ```
 
 ### 実装の特徴

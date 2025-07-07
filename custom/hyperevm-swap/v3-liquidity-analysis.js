@@ -147,17 +147,21 @@ async function analyzeV3Liquidity() {
   console.log('');
   
   console.log('📋 結論:');
-  console.log('   "V3流動性制限" = テストネット環境の制約');
+  console.log('   "V3流動性制限" = 部分的制約（2025年1月更新）');
   console.log('   - 技術実装: ✅ 正常');
-  console.log('   - プール存在: ❌ 流動性提供者不足');
+  console.log('   - WETH/PURRプール: ✅ 動作確認済み（101,038-101,341 gas成功）');
+  console.log('   - HSPXペア: ❌ 流動性提供者不足');
   console.log('   - 本番環境: ✅ 利用可能予想');
-  console.log('   - テスト方針: V2中心で進行');
+  console.log('   - テスト方針: V3（WETH/PURR）、V2（その他ペア）');
   
   return {
-    v2Status: 'fully_functional',
-    v3Status: 'technically_correct_but_no_liquidity',
-    recommendation: 'focus_on_v2_for_testing',
-    mainnetExpectation: 'both_v2_and_v3_should_work'
+    v2Status: 'limited_liquidity_some_pairs',
+    v3Status: 'weth_purr_working_hspx_pairs_limited',
+    recommendation: 'use_v3_for_weth_purr_v2_for_others',
+    mainnetExpectation: 'both_v2_and_v3_should_work',
+    lastUpdated: '2025-01-07',
+    successfulPairs: ['WETH/PURR'],
+    gasUsage: { router01: 101038, router02: 101341 }
   };
 }
 
