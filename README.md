@@ -905,4 +905,62 @@ Fee 0.05%: 1.344896967199230134 PURR
 
 ---
 
+## 🛡️ Safe Swap System（最新追加）
+
+ChatGPTのアドバイスに基づき、スワップエラーを自動防止する包括的なシステムを構築しました。
+
+### 解決された問題
+- **期限切れDeadline**: 2023年タイムスタンプ → 自動未来時刻生成
+- **無効アドレス**: 非Hex文字 → アドレス検証・正規化
+- **ERC20承認不足**: approve忘れ → 自動承認チェック・実行
+- **ゼロ・負の金額**: 不正値 → 金額バリデーション
+- **存在しないプール**: 無効fee tier → プール存在確認
+- **ガス見積もり失敗**: ネットワーク問題 → callStatic事前テスト
+
+### 使用方法
+
+```bash
+# 安全スワップデモ
+npm run demo:safe-swap
+
+# テスト実行
+npm run test:safe-swap
+npm run test:integration
+```
+
+```javascript
+// 基本的な使用例
+const { SafeSwapHelper } = require('./utils/safe-swap-helper');
+const safeSwapper = new SafeSwapHelper(provider, privateKey);
+
+const result = await safeSwapper.safeV3Swap({
+    tokenIn: "0xADcb2f358Eae6492F61A5f87eb8893d09391d160",
+    tokenOut: "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82",
+    amountIn: "0.001" // 全ての安全チェックは自動実行
+});
+```
+
+### HyperSwap Router正しい使い分け（ChatGPT検証済み）
+
+| Router | パラメータ構造 | 実績 |
+|--------|---------------|------|
+| **SwapRouter01** | deadline含む（8個） | ✅ 104,966 gas成功 |
+| **SwapRouter02** | deadline無し（7個） | ✅ 106,609 gas成功 |
+
+```javascript
+// Router01（deadline必須）
+await router01.exactInputSingle({
+    tokenIn, tokenOut, fee, recipient,
+    deadline: Math.floor(Date.now() / 1000) + 1800, // 必須
+    amountIn, amountOutMinimum, sqrtPriceLimitX96
+});
+
+// Router02（deadline無し）
+await router02.exactInputSingle({
+    tokenIn, tokenOut, fee, recipient,
+    // deadline無し - ChatGPT指摘通り
+    amountIn, amountOutMinimum, sqrtPriceLimitX96
+});
+```
+
 **🎉 これで、どんなスマートコントラクトにも対応できる汎用ツールセットが完成しました！**

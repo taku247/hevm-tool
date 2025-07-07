@@ -52,20 +52,32 @@ const v2Router = new ethers.Contract('0x85aA63EB2ab9BaAA74eAd7e7f82A571d74901853
 await v2Router.swapExactTokensForTokens(amountIn, amountOutMin, path, to, deadline);
 ```
 
-## 🚨 よくある間違い
+## 🚨 よくある間違い（ChatGPT検証後更新）
 
 ### **❌ 間違った組み合わせ:**
 ```javascript
-// SwapRouter02でV3スワップしようとする
-const router02 = new ethers.Contract('0x51c...', router02ABI, wallet);
-await router02.exactInputSingle(params); // ← この関数は存在しない！
+// Router01のABIでRouter02を呼ぶ（deadline含む→無し）
+const router02WithWrongABI = new ethers.Contract('0x51c...', router01ABI, wallet);
+await router02WithWrongABI.exactInputSingle(paramsWithDeadline); // ← Selector不一致で失敗！
 ```
 
 ### **✅ 正しい組み合わせ:**
 ```javascript
-// SwapRouter01でV3スワップ
+// Router01（deadline含む）
 const router01 = new ethers.Contract('0xD81...', router01ABI, wallet);
-await router01.exactInputSingle(params); // ← 正しい！
+await router01.exactInputSingle({
+    tokenIn, tokenOut, fee, recipient,
+    deadline: Math.floor(Date.now() / 1000) + 1800, // 必須
+    amountIn, amountOutMinimum, sqrtPriceLimitX96
+});
+
+// Router02（deadline無し）
+const router02 = new ethers.Contract('0x51c...', router02ABI, wallet);
+await router02.exactInputSingle({
+    tokenIn, tokenOut, fee, recipient,
+    // deadline無し
+    amountIn, amountOutMinimum, sqrtPriceLimitX96
+});
 ```
 
 ## 📊 今回の修正内容
@@ -74,5 +86,11 @@ await router01.exactInputSingle(params); // ← 正しい！
 2. **設定修正**: dex-config.jsonの全参照を更新
 3. **文書更新**: README、分析レポートの全参照を修正
 4. **明確化**: 機能別の使い分けガイド作成
+5. **🆕 ChatGPT検証後**: Router02のABIからdeadlineフィールドを全削除
+6. **🆕 実証済み**: 両RouterでのV3スワップ成功確認
 
-この命名規則により、開発者が迷うことなく適切なABIを選択できるようになりました。
+### 検証結果
+- **Router01**: 104,966 gas, 1.344649 PURR獲得 ✅
+- **Router02**: 106,609 gas, 1.344648 PURR獲得 ✅
+
+この命名規則と正しいABI構造により、開発者が迷うことなく適切なRouterを選択できるようになりました。
