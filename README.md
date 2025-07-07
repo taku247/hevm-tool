@@ -16,28 +16,35 @@ https://testnet.hyperswap.exchange/#/swap
 -   **自動ルーティング**: 最適レート検索・アービトラージ機会発見
 -   **包括的テスト**: ユニット/統合/実動作テスト完備
 
-### 2. DEX 監視・取引機能
+### 2. 🆕 HyperEVM スワップ機能
+
+-   **V3 Router01/Router02**: ChatGPT修正完全適用版
+-   **V2スワップ**: レート取得・流動性制限版
+-   **ABI統一**: abiディレクトリからの正しいインポート
+-   **Safe Swap**: callStatic事前検証・ガス保護機能
+
+### 3. DEX 監視・取引機能
 
 -   **dex-rate-monitor.ts**: リアルタイムレート監視
 -   **flexible-dex-monitor.js**: 設定ベース監視ツール
 -   **レート比較**: 複数 DEX の価格差分析
 -   **流動性検証**: プール存在・流動性確認
 
-### 3. 汎用コントラクトテンプレート
+### 4. 汎用コントラクトテンプレート
 
 -   **call-read.ts**: 任意コントラクトの READ 関数実行
 -   **call-write.ts**: 任意コントラクトの WRITE 関数実行（ガス制御付き）
 -   **contract-deploy.ts**: コントラクトデプロイ
 -   **batch-execute.ts**: 複数操作の一括実行
 
-### 4. 動的ガス価格制御機能
+### 5. 動的ガス価格制御機能
 
 -   **gas-analyzer.ts**: ネットワークガス価格分析・監視
 -   **動的ガス戦略**: safe/standard/fast/instant の 4 段階
 -   **自動最適化**: ネットワーク混雑度に応じた価格調整
 -   **手数料分析**: 事前コスト計算機能
 
-### 5. 包括的なテストスイート
+### 6. 包括的なテストスイート
 
 -   **設定システムテスト**: ConfigLoader 完全テスト
 -   **DEX 統合テスト**: 実ネットワーク接続テスト
@@ -77,6 +84,44 @@ https://testnet.hyperswap.exchange/#/swap
 1. **UI とバックエンドの乾離**: UI で V3 表示でも実際はマルチホップ経由
 2. **ルーティング SDK**: HyperSwap は高度な自動ルーティング機能を実装
 3. **設定ベースアーキテクチャ**: 将来の DEX 追加に対応した柔軟な設計
+
+## 🔄 HyperEVM スワップ機能
+
+### 利用可能なスクリプト
+
+#### V3 スワップ（推奨）✅
+```bash
+# Router01版（deadline必須、8パラメータ）
+node custom/hyperevm-swap/v3-swap-testnet-router01.js --tokenIn WETH --tokenOut PURR --amount 0.001
+
+# Router02版（deadline無し、7パラメータ）  
+node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn WETH --tokenOut PURR --amount 0.001
+```
+
+#### V2 スワップ（レート取得推奨）
+```bash
+# レート取得のみ
+node custom/hyperevm-swap/v2-swap-testnet.js --tokenIn WETH --tokenOut PURR --amount 0.001 --quote-only
+```
+
+### ChatGPT修正完全適用済み
+
+1. **未来deadline設定**: 期限切れエラー解消
+2. **callStatic事前テスト**: 実行前検証でリスク回避  
+3. **アドレス小文字化**: checksum validation問題解消
+4. **ガス保護機能**: 最低HYPE残高確認
+5. **エラーハンドリング強化**: 詳細なエラー情報提供
+6. **ABI統一**: abiディレクトリから正しいファイル読み込み
+
+### 実行実績
+
+- **V3 Router01**: ✅ 101,038 gas成功（0.001 WETH → 1.344896967199230134 PURR）
+- **V3 Router02**: ✅ 101,341 gas成功（0.001 WETH → 1.344896033923951587 PURR）
+- **V2レート取得**: ✅ 正常動作（1 WETH = 1256.263109 PURR）
+
+### 対応トークン
+
+HSPX, xHSPX, WETH, PURR, JEFF, CATBAL, HFUN, POINTS
 
 ## 📦 セットアップ
 

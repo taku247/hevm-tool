@@ -31,100 +31,11 @@ class HyperSwapV2 {
         // トークン設定をconfig/token-config.jsonから読み込み
         this.loadTokenConfig();
 
-        // V2 Router ABI（主要関数のみ）
-        this.routerABI = [
-            {
-                name: "swapExactTokensForTokens",
-                type: "function",
-                stateMutability: "nonpayable",
-                inputs: [
-                    { name: "amountIn", type: "uint256" },
-                    { name: "amountOutMin", type: "uint256" },
-                    { name: "path", type: "address[]" },
-                    { name: "to", type: "address" },
-                    { name: "deadline", type: "uint256" },
-                ],
-                outputs: [{ name: "amounts", type: "uint256[]" }],
-            },
-            {
-                name: "swapTokensForExactTokens",
-                type: "function",
-                stateMutability: "nonpayable",
-                inputs: [
-                    { name: "amountOut", type: "uint256" },
-                    { name: "amountInMax", type: "uint256" },
-                    { name: "path", type: "address[]" },
-                    { name: "to", type: "address" },
-                    { name: "deadline", type: "uint256" },
-                ],
-                outputs: [{ name: "amounts", type: "uint256[]" }],
-            },
-            {
-                name: "getAmountsOut",
-                type: "function",
-                stateMutability: "view",
-                inputs: [
-                    { name: "amountIn", type: "uint256" },
-                    { name: "path", type: "address[]" },
-                ],
-                outputs: [{ name: "amounts", type: "uint256[]" }],
-            },
-            {
-                name: "getAmountsIn",
-                type: "function",
-                stateMutability: "view",
-                inputs: [
-                    { name: "amountOut", type: "uint256" },
-                    { name: "path", type: "address[]" },
-                ],
-                outputs: [{ name: "amounts", type: "uint256[]" }],
-            },
-        ];
+        // V2 Router ABI - abiディレクトリから読み込み
+        this.routerABI = require('../../abi/HyperSwapV2Router.json');
 
-        // ERC20 ABI（主要関数のみ）
-        this.erc20ABI = [
-            {
-                name: "approve",
-                type: "function",
-                stateMutability: "nonpayable",
-                inputs: [
-                    { name: "spender", type: "address" },
-                    { name: "amount", type: "uint256" },
-                ],
-                outputs: [{ name: "", type: "bool" }],
-            },
-            {
-                name: "allowance",
-                type: "function",
-                stateMutability: "view",
-                inputs: [
-                    { name: "owner", type: "address" },
-                    { name: "spender", type: "address" },
-                ],
-                outputs: [{ name: "", type: "uint256" }],
-            },
-            {
-                name: "balanceOf",
-                type: "function",
-                stateMutability: "view",
-                inputs: [{ name: "account", type: "address" }],
-                outputs: [{ name: "", type: "uint256" }],
-            },
-            {
-                name: "decimals",
-                type: "function",
-                stateMutability: "view",
-                inputs: [],
-                outputs: [{ name: "", type: "uint8" }],
-            },
-            {
-                name: "symbol",
-                type: "function",
-                stateMutability: "view",
-                inputs: [],
-                outputs: [{ name: "", type: "string" }],
-            },
-        ];
+        // ERC20 ABI - 共通ファイルから読み込み
+        this.erc20ABI = require('../../examples/sample-abi/ERC20.json');
     }
 
     /**
@@ -512,8 +423,23 @@ class HyperSwapV2 {
                 wallet
             );
 
-            const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20分後
+            const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20分後（ChatGPT修正: 未来の時刻確保）
             const path = quote.path;
+
+            // callStaticで事前テスト（ChatGPT修正: 実行前検証）
+            console.log("   🧪 callStaticテスト...");
+            try {
+                const staticResult = await router.callStatic.swapExactTokensForTokens(
+                    amountIn,
+                    minAmountOut,
+                    path,
+                    wallet.address,
+                    deadline
+                );
+                console.log(`   ✅ callStatic成功: ${ethers.utils.formatUnits(staticResult[1], 18)} ${tokenOutSymbol}`);
+            } catch (staticError) {
+                throw new Error(`callStatic失敗: ${staticError.message}`);
+            }
 
             // ガス制限を設定して安全にスワップ実行
             const tx = await router.swapExactTokensForTokens(

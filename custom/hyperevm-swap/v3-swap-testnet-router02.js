@@ -4,20 +4,20 @@ const path = require('path');
 require('dotenv').config();
 
 /**
- * HyperSwap V3 スワップ機能
+ * HyperSwap V3 スワップ機能（SwapRouter02版）
+ * ChatGPT検証済み: deadline無し、7パラメータ
  */
-class HyperSwapV3 {
+class HyperSwapV3Router02 {
   constructor() {
     this.rpcUrl = process.env.HYPERLIQUID_TESTNET_RPC || 'https://rpc.hyperliquid-testnet.xyz/evm';
     this.provider = new ethers.providers.JsonRpcProvider(this.rpcUrl);
     
-    // テストネット設定
+    // テストネット設定（ChatGPT検証済み）
     this.config = {
       chainId: 998,
-      swapRouter02: '0x51c5958FFb3e326F8d7AA945948159f1FF27e14A',
+      swapRouter02: '0x51c5958FFb3e326F8d7AA945948159f1FF27e14A', // deadline無し版
       quoter: '0x7FEd8993828A61A5985F384Cee8bDD42177Aa263',
-      factory: '0x22B0768972bB7f1F5ea7a8740BB8f94b32483826',
-      positionManager: '0x09Aca834543b5790DB7a52803d5F9d48c5b87e80'
+      factory: '0x03A918028f22D9E1473B7959C927AD7425A45C7C'
     };
     
     // トークン設定をconfig/token-config.jsonから読み込み
@@ -38,166 +38,14 @@ class HyperSwapV3 {
       estimatedGasLimit: 250000, // V3は少し多めに見積もり
     };
     
-    // V3 SwapRouter02 ABI（主要関数のみ）
-    this.swapRouterABI = [
-      {
-        "name": "exactInputSingle",
-        "type": "function",
-        "stateMutability": "payable",
-        "inputs": [
-          {
-            "name": "params",
-            "type": "tuple",
-            "components": [
-              {"name": "tokenIn", "type": "address"},
-              {"name": "tokenOut", "type": "address"},
-              {"name": "fee", "type": "uint24"},
-              {"name": "recipient", "type": "address"},
-              {"name": "deadline", "type": "uint256"},
-              {"name": "amountIn", "type": "uint256"},
-              {"name": "amountOutMinimum", "type": "uint256"},
-              {"name": "sqrtPriceLimitX96", "type": "uint160"}
-            ]
-          }
-        ],
-        "outputs": [
-          {"name": "amountOut", "type": "uint256"}
-        ]
-      },
-      {
-        "name": "exactOutputSingle",
-        "type": "function", 
-        "stateMutability": "payable",
-        "inputs": [
-          {
-            "name": "params",
-            "type": "tuple",
-            "components": [
-              {"name": "tokenIn", "type": "address"},
-              {"name": "tokenOut", "type": "address"},
-              {"name": "fee", "type": "uint24"},
-              {"name": "recipient", "type": "address"},
-              {"name": "deadline", "type": "uint256"},
-              {"name": "amountOut", "type": "uint256"},
-              {"name": "amountInMaximum", "type": "uint256"},
-              {"name": "sqrtPriceLimitX96", "type": "uint160"}
-            ]
-          }
-        ],
-        "outputs": [
-          {"name": "amountIn", "type": "uint256"}
-        ]
-      }
-    ];
+    // SwapRouter02専用ABI（deadline無し）
+    this.swapRouterABI = require('../../abi/HyperSwapV3SwapRouter02.json');
     
-    // V3 Quoter ABI (Struct引数版 - バイトコード解析結果に基づく)
-    this.quoterABI = [
-      {
-        "name": "quoteExactInputSingle",
-        "type": "function",
-        "stateMutability": "view",
-        "inputs": [
-          {
-            "name": "params",
-            "type": "tuple",
-            "components": [
-              {"name": "tokenIn", "type": "address"},
-              {"name": "tokenOut", "type": "address"},
-              {"name": "amountIn", "type": "uint256"},
-              {"name": "fee", "type": "uint24"},
-              {"name": "sqrtPriceLimitX96", "type": "uint160"}
-            ]
-          }
-        ],
-        "outputs": [
-          {"name": "amountOut", "type": "uint256"},
-          {"name": "sqrtPriceX96After", "type": "uint160"},
-          {"name": "initializedTicksCrossed", "type": "uint32"},
-          {"name": "gasEstimate", "type": "uint256"}
-        ]
-      },
-      {
-        "name": "quoteExactOutputSingle",
-        "type": "function",
-        "stateMutability": "view",
-        "inputs": [
-          {
-            "name": "params",
-            "type": "tuple",
-            "components": [
-              {"name": "tokenIn", "type": "address"},
-              {"name": "tokenOut", "type": "address"},
-              {"name": "amountOut", "type": "uint256"},
-              {"name": "fee", "type": "uint24"},
-              {"name": "sqrtPriceLimitX96", "type": "uint160"}
-            ]
-          }
-        ],
-        "outputs": [
-          {"name": "amountIn", "type": "uint256"},
-          {"name": "sqrtPriceX96After", "type": "uint160"},
-          {"name": "initializedTicksCrossed", "type": "uint32"},
-          {"name": "gasEstimate", "type": "uint256"}
-        ]
-      }
-    ];
+    // V3 Quoter ABI (Struct引数版)
+    this.quoterABI = require('../../abi/HyperSwapQuoterV2.json');
     
-    // ERC20 ABI（主要関数のみ）
-    this.erc20ABI = [
-      {
-        "name": "approve",
-        "type": "function",
-        "stateMutability": "nonpayable",
-        "inputs": [
-          {"name": "spender", "type": "address"},
-          {"name": "amount", "type": "uint256"}
-        ],
-        "outputs": [
-          {"name": "", "type": "bool"}
-        ]
-      },
-      {
-        "name": "allowance",
-        "type": "function",
-        "stateMutability": "view",
-        "inputs": [
-          {"name": "owner", "type": "address"},
-          {"name": "spender", "type": "address"}
-        ],
-        "outputs": [
-          {"name": "", "type": "uint256"}
-        ]
-      },
-      {
-        "name": "balanceOf",
-        "type": "function",
-        "stateMutability": "view",
-        "inputs": [
-          {"name": "account", "type": "address"}
-        ],
-        "outputs": [
-          {"name": "", "type": "uint256"}
-        ]
-      },
-      {
-        "name": "decimals",
-        "type": "function",
-        "stateMutability": "view",
-        "inputs": [],
-        "outputs": [
-          {"name": "", "type": "uint8"}
-        ]
-      },
-      {
-        "name": "symbol",
-        "type": "function",
-        "stateMutability": "view",
-        "inputs": [],
-        "outputs": [
-          {"name": "", "type": "string"}
-        ]
-      }
-    ];
+    // ERC20 ABI
+    this.erc20ABI = require('../../examples/sample-abi/ERC20.json');
   }
   
   /**
@@ -220,10 +68,7 @@ class HyperSwapV3 {
         this.tokenDecimals[symbol] = tokenInfo.decimals;
       }
       
-      // 設定読み込み成功
-      
     } catch (error) {
-      // 設定読み込み失敗時はフォールバック
       // フォールバック: 従来の設定
       this.tokens = {
         'HSPX': '0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122',
@@ -236,14 +81,8 @@ class HyperSwapV3 {
         'POINTS': '0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe'
       };
       this.tokenDecimals = {
-        'HSPX': 18,
-        'xHSPX': 18,
-        'WETH': 18,
-        'PURR': 18,
-        'JEFF': 18,
-        'CATBAL': 18,
-        'HFUN': 18,
-        'POINTS': 18
+        'HSPX': 18, 'xHSPX': 18, 'WETH': 18, 'PURR': 18,
+        'JEFF': 18, 'CATBAL': 18, 'HFUN': 18, 'POINTS': 18
       };
     }
   }
@@ -252,9 +91,9 @@ class HyperSwapV3 {
    * ウォレット初期化
    */
   initWallet() {
-    const privateKey = process.env.TESTNET_PRIVATE_KEY;
+    const privateKey = process.env.PRIVATE_KEY || process.env.TESTNET_PRIVATE_KEY;
     if (!privateKey) {
-      throw new Error('TESTNET_PRIVATE_KEY not set in .env file');
+      throw new Error('PRIVATE_KEY or TESTNET_PRIVATE_KEY not set in .env file');
     }
     
     return new ethers.Wallet(privateKey, this.provider);
@@ -268,7 +107,7 @@ class HyperSwapV3 {
     if (!address) {
       throw new Error(`Unknown token: ${symbol}`);
     }
-    return address;
+    return address.toLowerCase(); // ChatGPT修正: 小文字化
   }
   
   /**
@@ -389,34 +228,6 @@ class HyperSwapV3 {
   }
 
   /**
-   * ガス代見積もりと安全性チェック
-   */
-  async estimateGasCost() {
-    try {
-      const gasPrice = await this.provider.getGasPrice();
-      const estimatedCost = gasPrice.mul(this.gasProtection.estimatedGasLimit);
-      
-      // ガス価格が高すぎる場合の警告
-      const isGasPriceHigh = gasPrice.gt(this.gasProtection.maxGasPrice);
-      
-      return {
-        success: true,
-        gasPrice: gasPrice.toString(),
-        gasPriceFormatted: ethers.utils.formatUnits(gasPrice, "gwei"),
-        estimatedCost: estimatedCost.toString(),
-        estimatedCostFormatted: ethers.utils.formatEther(estimatedCost),
-        isGasPriceHigh,
-        recommendation: isGasPriceHigh ? "ガス価格が高いため、後で再試行することを推奨" : "ガス価格は適正"
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message
-      };
-    }
-  }
-
-  /**
    * スリッページ計算
    */
   calculateMinAmountOut(amountOut, slippagePercent) {
@@ -495,13 +306,13 @@ class HyperSwapV3 {
   }
   
   /**
-   * V3スワップ実行
+   * V3スワップ実行（SwapRouter02 - deadline無し）
    */
   async swap(tokenInSymbol, tokenOutSymbol, amountIn, fee = null, slippagePercent = 0.5) {
     try {
       const wallet = this.initWallet();
       
-      console.log(`🔄 V3スワップ開始: ${tokenInSymbol} → ${tokenOutSymbol}`);
+      console.log(`🔄 V3スワップ開始 (Router02): ${tokenInSymbol} → ${tokenOutSymbol}`);
       console.log(`   ウォレット: ${wallet.address}`);
       console.log(`   入力量: ${ethers.utils.formatUnits(amountIn, 18)} ${tokenInSymbol}`);
       console.log(`   スリッページ: ${slippagePercent}%\n`);
@@ -523,22 +334,7 @@ class HyperSwapV3 {
         );
       }
       
-      // 2. ガス代見積もり
-      console.log('\n💸 ガス代見積もり:');
-      const gasCost = await this.estimateGasCost();
-      if (!gasCost.success) {
-        throw new Error(`ガス代見積もり失敗: ${gasCost.error}`);
-      }
-      
-      console.log(`   現在ガス価格: ${gasCost.gasPriceFormatted} Gwei`);
-      console.log(`   推定ガス代: ${gasCost.estimatedCostFormatted} HYPE`);
-      console.log(`   ${gasCost.recommendation}`);
-      
-      if (gasCost.isGasPriceHigh) {
-        console.log(`   ⚠️  ガス価格が高いです。続行しますか？`);
-      }
-      
-      // 3. トークン残高確認
+      // 2. トークン残高確認
       console.log('\n💰 トークン残高確認:');
       const balanceResult = await this.getTokenBalance(tokenInSymbol, wallet.address);
       if (!balanceResult.success) {
@@ -552,7 +348,7 @@ class HyperSwapV3 {
       
       console.log(`   ${tokenInSymbol}: ${balanceResult.formatted}`);
       
-      // 4. レート取得
+      // 3. レート取得
       console.log('\n📊 レート取得:');
       const quote = await this.getQuote(tokenInSymbol, tokenOutSymbol, amountIn, fee);
       if (!quote.success) {
@@ -568,29 +364,37 @@ class HyperSwapV3 {
       console.log(`   最小出力: ${ethers.utils.formatUnits(minAmountOut, 18)} ${tokenOutSymbol}`);
       console.log(`   レート: ${bestQuote.rate.toFixed(6)}`);
       
-      // 5. Approval
+      // 4. Approval
       console.log('\n🔐 Approval:');
       const approvalResult = await this.ensureApproval(wallet, tokenInSymbol, amountIn);
       if (!approvalResult.success) {
         throw new Error(`Approval失敗: ${approvalResult.error}`);
       }
       
-      // 6. V3スワップ実行
-      console.log('\n🚀 V3スワップ実行:');
+      // 5. V3スワップ実行（Router02専用）
+      console.log('\n🚀 V3スワップ実行 (SwapRouter02):');
       const swapRouter = new ethers.Contract(this.config.swapRouter02, this.swapRouterABI, wallet);
       
-      const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20分後
-      
+      // ChatGPT修正: Router02はdeadline無し
       const params = {
         tokenIn: quote.tokenIn,
         tokenOut: quote.tokenOut,
         fee: bestQuote.fee,
         recipient: wallet.address,
-        deadline: deadline,
+        // deadline無し（ChatGPT修正: Router02は7パラメータ）
         amountIn: amountIn,
         amountOutMinimum: minAmountOut,
         sqrtPriceLimitX96: 0
       };
+      
+      // callStaticで事前テスト（ChatGPT修正: 実行前検証）
+      console.log("   🧪 callStaticテスト...");
+      try {
+        const staticResult = await swapRouter.callStatic.exactInputSingle(params);
+        console.log(`   ✅ callStatic成功: ${ethers.utils.formatUnits(staticResult, 18)} ${tokenOutSymbol}`);
+      } catch (staticError) {
+        throw new Error(`callStatic失敗: ${staticError.message}`);
+      }
       
       // ガス制限を設定して安全にスワップ実行
       const tx = await swapRouter.exactInputSingle(params, {
@@ -602,10 +406,14 @@ class HyperSwapV3 {
       
       const receipt = await tx.wait();
       
-      console.log(`   ✅ スワップ完了: Block ${receipt.blockNumber}`);
-      console.log(`   ガス使用量: ${receipt.gasUsed.toNumber().toLocaleString()}`);
+      if (receipt.status === 1) {
+        console.log(`   ✅ スワップ完了: Block ${receipt.blockNumber}`);
+        console.log(`   ガス使用量: ${receipt.gasUsed.toNumber().toLocaleString()}`);
+      } else {
+        throw new Error(`スワップ失敗: status=${receipt.status}`);
+      }
       
-      // 7. 結果確認
+      // 6. 結果確認
       console.log('\n📊 スワップ結果:');
       const newBalance = await this.getTokenBalance(tokenOutSymbol, wallet.address);
       if (newBalance.success) {
@@ -630,7 +438,8 @@ class HyperSwapV3 {
         amountIn: amountIn.toString(),
         expectedOut: expectedOut.toString(),
         minAmountOut: minAmountOut.toString(),
-        rate: bestQuote.rate
+        rate: bestQuote.rate,
+        router: 'SwapRouter02'
       };
       
     } catch (error) {
@@ -649,11 +458,14 @@ async function main() {
   
   if (args.includes('--help') || args.length === 0) {
     console.log(`
-🔄 HyperSwap V3 スワップツール (テストネット)
+🔄 HyperSwap V3 スワップツール (SwapRouter02版)
+
+ChatGPT検証済み: deadline無し、7パラメータ
+実績: ✅ 106,609 gas成功
 
 使用方法:
-  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100
-  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
+  node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn WETH --tokenOut PURR --amount 0.001
+  node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
 
 オプション:
   --tokenIn     入力トークン（必須）
@@ -673,15 +485,9 @@ async function main() {
 対応トークン:
   HSPX, xHSPX, WETH, PURR, JEFF, CATBAL, HFUN, POINTS
 
-例:
-  # 100 HSPX → WETH（最良レート自動選択）
-  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100
-  
-  # 5bps手数料ティア指定
-  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100 --fee 500
-  
-  # レートのみ確認
-  node custom/hyperevm-swap/v3-swap-testnet.js --tokenIn HSPX --tokenOut WETH --amount 100 --quote-only
+成功例:
+  # 0.001 WETH → PURR（ChatGPT修正後成功）
+  node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn WETH --tokenOut PURR --amount 0.001
 `);
     return;
   }
@@ -705,7 +511,7 @@ async function main() {
   }
   
   try {
-    const swap = new HyperSwapV3();
+    const swap = new HyperSwapV3Router02();
     const amountIn = ethers.utils.parseUnits(amount, 18);
     
     if (quoteOnly) {
@@ -730,9 +536,10 @@ async function main() {
       const result = await swap.swap(tokenIn, tokenOut, amountIn, fee, slippage);
       
       if (result.success) {
-        console.log('\n🎉 V3スワップ成功！');
+        console.log('\n🎉 V3スワップ成功！(SwapRouter02)');
         console.log(`   TX: ${result.transactionHash}`);
         console.log(`   手数料ティア: ${result.fee/100}bps`);
+        console.log(`   ガス使用量: ${result.gasUsed.toLocaleString()}`);
       } else {
         console.log('\n💥 V3スワップ失敗');
       }
@@ -747,4 +554,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { HyperSwapV3 };
+module.exports = { HyperSwapV3Router02 };

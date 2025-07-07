@@ -157,8 +157,8 @@
           },
           "feeRate": 0.003,
           "type": "v2",
-          "status": "quote-only",
-          "note": "スワップ機能が制限されている可能性"
+          "status": "limited",
+          "note": "V3推奨、V2は流動性制限の可能性あり"
         },
         "hyperswap_v3_testnet": {
           "name": "HyperSwap V3 (Testnet)",
