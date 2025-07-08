@@ -98,6 +98,109 @@ node custom/hyperevm-swap/v3-swap-testnet-router01.js --tokenIn WETH --tokenOut 
 node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn WETH --tokenOut PURR --amount 0.001
 ```
 
+## 🔄 MultiSwap コントラクト機能
+
+### 📊 マルチホップスワップ対応
+
+**アトミックマルチスワップ**: 複数のトークンスワップを単一トランザクションで実行
+
+#### 1. 最適化版 MultiSwap ✅
+```solidity
+// WETH → PURR → HFUN (最適なfee設定)
+MultiSwapOptimized: 0x6bdab42E95b7707FbBbA97863B25FDc875C0cc2C
+```
+
+**実行例**:
+```bash
+# 最適化されたマルチホップテスト
+node custom/deploy/test-optimized-multihop.js
+```
+
+**成功実績**:
+- WETH → PURR (500bps/0.05%) → HFUN (10000bps/1%)
+- 0.0001 WETH → 0.1345 PURR → 0.0000955 HFUN ✅
+- TX: `0xdfb5c1b54f8356aec64cda3a5b803a96f02f12d2b201342dbf17a1a6d6e001f7`
+
+#### 2. 柔軟な MultiSwap ✅
+```solidity  
+// カスタムパス・fee設定対応
+MultiSwapFlexible: 0x28199bbC5E49431522Ae91495f66630025103223
+```
+
+**機能**:
+- 任意の数のホップ対応
+- 各ホップで異なるfee tier指定可能
+- V3のみ使用でテストネット制約回避
+
+#### 3. アービトラージ最適化版 🆕✅
+```solidity
+// ChatGPT推奨: Fund pooling + Owner-only access control
+MultiSwapArbitrageSimple: 0x4B90A95915a4a0C2690f1F36F3B4C347c27B41d2
+```
+
+**ChatGPT推奨事項実装**:
+- ✅ Owner-only access control
+- ✅ Fund pooling (ガス最適化) 
+- ✅ Pre-approved router (コンストラクタで設定)
+- ✅ Reentrancy protection
+- ✅ Emergency pause functionality
+- ✅ transferFrom不要でガス節約
+
+**実行例**:
+```bash
+# デプロイ
+node custom/deploy/deploy-arbitrage-simple.js
+
+# 機能テスト
+node custom/deploy/test-deployed-arbitrage.js
+```
+
+**成功実績**:
+- 0.0001 WETH → 0.0000955 HFUN ✅
+- 緊急停止機能動作確認 ✅
+- Fund pooling方式でガス最適化 ✅
+
+#### 4. V2/V3制約の完全解明 🔍
+
+**テストネットV2制約**:
+- レート取得: ✅ 成功 (36ペア中21ペア)
+- 実際のスワップ: ❌ 全ペアで"missing revert data"
+- **結論**: V2は実質使用不可、V3必須
+
+**V3プール手数料設定**:
+- WETH/PURR: 500bps (0.05%)
+- PURR/HFUN: 10000bps (1%) ← **重要**: 他のfeeでは"SPL"エラー
+- WETH/HFUN: 500bps (0.05%)
+
+#### 4. 作成したデバッグツール
+
+**包括的な分析ツール**:
+```bash
+# V2/V3ペア調査
+node custom/deploy/investigate-router-pairs.js
+
+# 全testnetトークン(36ペア)分析
+node custom/deploy/analyze-v2-routes.js
+
+# 出力: v2-route-analysis.json (token-config.json形式)
+```
+
+**解決した問題**:
+1. **元のMultiSwap失敗原因**: 2段目でV2強制使用 + 手数料設定ミス
+2. **ChatGPT分析との相違**: ガス不足ではなく根本的なV2制約
+3. **"SPL"エラーの原因**: Slippage Protection Limit (手数料設定ミス)
+
+#### 5. 最終推奨事項
+
+**開発指針**:
+- ✅ **V3のみ使用**: テストネットではV2実行不可
+- ✅ **事前fee調査**: 各ペアの正確なfee tier確認必須  
+- ✅ **動的ルーティング**: quote-onlyでの事前検証推奨
+
+**実用的なコントラクト**:
+- `MultiSwapOptimized.sol`: 最適化された固定ルート
+- `MultiSwapFlexible.sol`: 柔軟なカスタムルート構築
+
 #### V2 スワップ（レート取得推奨）
 ```bash
 # レート取得のみ

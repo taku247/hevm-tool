@@ -1,0 +1,694 @@
+{
+  "network": "hyperevm-testnet",
+  "router": {
+    "v2": {
+      "address": "0x85aA63EB2ab9BaAA74eAd7e7f82A571d74901853",
+      "type": "UniswapV2-compatible",
+      "status": "limited"
+    }
+  },
+  "analysisResults": {
+    "totalPairs": 36,
+    "fullyAvailable": 0,
+    "rateOnly": 21,
+    "unavailable": 15
+  },
+  "availablePairs": [],
+  "limitedPairs": [
+    {
+      "pair": "HSPX-WETH",
+      "symbols": [
+        "HSPX",
+        "WETH"
+      ],
+      "addresses": [
+        "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122",
+        "0xADcb2f358Eae6492F61A5F87eb8893d09391d160"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.000019761417695165",
+        "ratio": 0.0019761417695165
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "HSPX-PURR",
+      "symbols": [
+        "HSPX",
+        "PURR"
+      ],
+      "addresses": [
+        "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122",
+        "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.032972446477114015",
+        "ratio": 3.2972446477114015
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "HSPX-JEFF",
+      "symbols": [
+        "HSPX",
+        "JEFF"
+      ],
+      "addresses": [
+        "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122",
+        "0xbF7C8201519EC22512EB1405Db19C427DF64fC91"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.001076903005242386",
+        "ratio": 0.10769030052423861
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "HSPX-CATBAL",
+      "symbols": [
+        "HSPX",
+        "CATBAL"
+      ],
+      "addresses": [
+        "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122",
+        "0x26272928f2395452090143Cf347aa85f78cDa3E8"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.000231422821944834",
+        "ratio": 0.023142282194483402
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "HSPX-HFUN",
+      "symbols": [
+        "HSPX",
+        "HFUN"
+      ],
+      "addresses": [
+        "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122",
+        "0x37adB2550b965851593832a6444763eeB3e1d1Ec"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.001590718136589855",
+        "ratio": 0.15907181365898548
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "HSPX-POINTS",
+      "symbols": [
+        "HSPX",
+        "POINTS"
+      ],
+      "addresses": [
+        "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122",
+        "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.000132217881476383",
+        "ratio": 0.013221788147638299
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "WETH-PURR",
+      "symbols": [
+        "WETH",
+        "PURR"
+      ],
+      "addresses": [
+        "0xADcb2f358Eae6492F61A5F87eb8893d09391d160",
+        "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "12.562626878378358634",
+        "ratio": 1256.2626878378358
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "WETH-JEFF",
+      "symbols": [
+        "WETH",
+        "JEFF"
+      ],
+      "addresses": [
+        "0xADcb2f358Eae6492F61A5F87eb8893d09391d160",
+        "0xbF7C8201519EC22512EB1405Db19C427DF64fC91"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.515762419287773687",
+        "ratio": 51.576241928777364
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "WETH-CATBAL",
+      "symbols": [
+        "WETH",
+        "CATBAL"
+      ],
+      "addresses": [
+        "0xADcb2f358Eae6492F61A5F87eb8893d09391d160",
+        "0x26272928f2395452090143Cf347aa85f78cDa3E8"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.143024040718215264",
+        "ratio": 14.302404071821526
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "WETH-HFUN",
+      "symbols": [
+        "WETH",
+        "HFUN"
+      ],
+      "addresses": [
+        "0xADcb2f358Eae6492F61A5F87eb8893d09391d160",
+        "0x37adB2550b965851593832a6444763eeB3e1d1Ec"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.247129715563997611",
+        "ratio": 24.712971556399758
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "WETH-POINTS",
+      "symbols": [
+        "WETH",
+        "POINTS"
+      ],
+      "addresses": [
+        "0xADcb2f358Eae6492F61A5F87eb8893d09391d160",
+        "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.072937566537697516",
+        "ratio": 7.293756653769752
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "PURR-JEFF",
+      "symbols": [
+        "PURR",
+        "JEFF"
+      ],
+      "addresses": [
+        "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82",
+        "0xbF7C8201519EC22512EB1405Db19C427DF64fC91"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.000334578899353118",
+        "ratio": 0.0334578899353118
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "PURR-CATBAL",
+      "symbols": [
+        "PURR",
+        "CATBAL"
+      ],
+      "addresses": [
+        "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82",
+        "0x26272928f2395452090143Cf347aa85f78cDa3E8"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.00017299452175105",
+        "ratio": 0.017299452175105
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "PURR-HFUN",
+      "symbols": [
+        "PURR",
+        "HFUN"
+      ],
+      "addresses": [
+        "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82",
+        "0x37adB2550b965851593832a6444763eeB3e1d1Ec"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.000298682705369383",
+        "ratio": 0.029868270536938298
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "PURR-POINTS",
+      "symbols": [
+        "PURR",
+        "POINTS"
+      ],
+      "addresses": [
+        "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82",
+        "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.000040707332606277",
+        "ratio": 0.0040707332606277
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "JEFF-CATBAL",
+      "symbols": [
+        "JEFF",
+        "CATBAL"
+      ],
+      "addresses": [
+        "0xbF7C8201519EC22512EB1405Db19C427DF64fC91",
+        "0x26272928f2395452090143Cf347aa85f78cDa3E8"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.003998960457010757",
+        "ratio": 0.3998960457010757
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "JEFF-HFUN",
+      "symbols": [
+        "JEFF",
+        "HFUN"
+      ],
+      "addresses": [
+        "0xbF7C8201519EC22512EB1405Db19C427DF64fC91",
+        "0x37adB2550b965851593832a6444763eeB3e1d1Ec"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.004871166714494084",
+        "ratio": 0.4871166714494084
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "JEFF-POINTS",
+      "symbols": [
+        "JEFF",
+        "POINTS"
+      ],
+      "addresses": [
+        "0xbF7C8201519EC22512EB1405Db19C427DF64fC91",
+        "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.001289149619806079",
+        "ratio": 0.1289149619806079
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "CATBAL-HFUN",
+      "symbols": [
+        "CATBAL",
+        "HFUN"
+      ],
+      "addresses": [
+        "0x26272928f2395452090143Cf347aa85f78cDa3E8",
+        "0x37adB2550b965851593832a6444763eeB3e1d1Ec"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.012254541101659892",
+        "ratio": 1.225454110165989
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "CATBAL-POINTS",
+      "symbols": [
+        "CATBAL",
+        "POINTS"
+      ],
+      "addresses": [
+        "0x26272928f2395452090143Cf347aa85f78cDa3E8",
+        "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.005591219221938211",
+        "ratio": 0.5591219221938211
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    },
+    {
+      "pair": "HFUN-POINTS",
+      "symbols": [
+        "HFUN",
+        "POINTS"
+      ],
+      "addresses": [
+        "0x37adB2550b965851593832a6444763eeB3e1d1Ec",
+        "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe"
+      ],
+      "rate": {
+        "input": "0.01",
+        "output": "0.00392828606016062",
+        "ratio": 0.392828606016062
+      },
+      "limitation": "execution-blocked",
+      "errors": {
+        "gasEstimate": "missing revert data (action=\"estimateGas\", data=null, reason=null, transaction={ \"data\": \"0x38ed1739"
+      },
+      "status": "rate-only"
+    }
+  ],
+  "unavailablePairs": [
+    {
+      "pair": "HYPE-HSPX",
+      "symbols": [
+        "HYPE",
+        "HSPX"
+      ],
+      "addresses": [
+        "0x0000000000000000000000000000000000000000",
+        "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122"
+      ],
+      "errors": {
+        "rateQuery": "execution reverted: \"UniswapV2Library: ZERO_ADDRESS\" (action=\"call\", data=\"0x08c379a0000000000000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "HYPE-xHSPX",
+      "symbols": [
+        "HYPE",
+        "xHSPX"
+      ],
+      "addresses": [
+        "0x0000000000000000000000000000000000000000",
+        "0x91483330b5953895757b65683d1272d86d6430B3"
+      ],
+      "errors": {
+        "rateQuery": "execution reverted: \"UniswapV2Library: ZERO_ADDRESS\" (action=\"call\", data=\"0x08c379a0000000000000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "HYPE-WETH",
+      "symbols": [
+        "HYPE",
+        "WETH"
+      ],
+      "addresses": [
+        "0x0000000000000000000000000000000000000000",
+        "0xADcb2f358Eae6492F61A5F87eb8893d09391d160"
+      ],
+      "errors": {
+        "rateQuery": "execution reverted: \"UniswapV2Library: ZERO_ADDRESS\" (action=\"call\", data=\"0x08c379a0000000000000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "HYPE-PURR",
+      "symbols": [
+        "HYPE",
+        "PURR"
+      ],
+      "addresses": [
+        "0x0000000000000000000000000000000000000000",
+        "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82"
+      ],
+      "errors": {
+        "rateQuery": "execution reverted: \"UniswapV2Library: ZERO_ADDRESS\" (action=\"call\", data=\"0x08c379a0000000000000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "HYPE-JEFF",
+      "symbols": [
+        "HYPE",
+        "JEFF"
+      ],
+      "addresses": [
+        "0x0000000000000000000000000000000000000000",
+        "0xbF7C8201519EC22512EB1405Db19C427DF64fC91"
+      ],
+      "errors": {
+        "rateQuery": "execution reverted: \"UniswapV2Library: ZERO_ADDRESS\" (action=\"call\", data=\"0x08c379a0000000000000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "HYPE-CATBAL",
+      "symbols": [
+        "HYPE",
+        "CATBAL"
+      ],
+      "addresses": [
+        "0x0000000000000000000000000000000000000000",
+        "0x26272928f2395452090143Cf347aa85f78cDa3E8"
+      ],
+      "errors": {
+        "rateQuery": "execution reverted: \"UniswapV2Library: ZERO_ADDRESS\" (action=\"call\", data=\"0x08c379a0000000000000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "HYPE-HFUN",
+      "symbols": [
+        "HYPE",
+        "HFUN"
+      ],
+      "addresses": [
+        "0x0000000000000000000000000000000000000000",
+        "0x37adB2550b965851593832a6444763eeB3e1d1Ec"
+      ],
+      "errors": {
+        "rateQuery": "execution reverted: \"UniswapV2Library: ZERO_ADDRESS\" (action=\"call\", data=\"0x08c379a0000000000000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "HYPE-POINTS",
+      "symbols": [
+        "HYPE",
+        "POINTS"
+      ],
+      "addresses": [
+        "0x0000000000000000000000000000000000000000",
+        "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe"
+      ],
+      "errors": {
+        "rateQuery": "execution reverted: \"UniswapV2Library: ZERO_ADDRESS\" (action=\"call\", data=\"0x08c379a0000000000000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "HSPX-xHSPX",
+      "symbols": [
+        "HSPX",
+        "xHSPX"
+      ],
+      "addresses": [
+        "0xD8c23394e2d55AA6dB9E5bb1305df54A1F83D122",
+        "0x91483330b5953895757b65683d1272d86d6430B3"
+      ],
+      "errors": {
+        "rateQuery": "missing revert data (action=\"call\", data=null, reason=null, transaction={ \"data\": \"0xd06ca61f0000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "xHSPX-WETH",
+      "symbols": [
+        "xHSPX",
+        "WETH"
+      ],
+      "addresses": [
+        "0x91483330b5953895757b65683d1272d86d6430B3",
+        "0xADcb2f358Eae6492F61A5F87eb8893d09391d160"
+      ],
+      "errors": {
+        "rateQuery": "missing revert data (action=\"call\", data=null, reason=null, transaction={ \"data\": \"0xd06ca61f0000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "xHSPX-PURR",
+      "symbols": [
+        "xHSPX",
+        "PURR"
+      ],
+      "addresses": [
+        "0x91483330b5953895757b65683d1272d86d6430B3",
+        "0xC003D79B8a489703b1753711E3ae9fFDFC8d1a82"
+      ],
+      "errors": {
+        "rateQuery": "missing revert data (action=\"call\", data=null, reason=null, transaction={ \"data\": \"0xd06ca61f0000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "xHSPX-JEFF",
+      "symbols": [
+        "xHSPX",
+        "JEFF"
+      ],
+      "addresses": [
+        "0x91483330b5953895757b65683d1272d86d6430B3",
+        "0xbF7C8201519EC22512EB1405Db19C427DF64fC91"
+      ],
+      "errors": {
+        "rateQuery": "missing revert data (action=\"call\", data=null, reason=null, transaction={ \"data\": \"0xd06ca61f0000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "xHSPX-CATBAL",
+      "symbols": [
+        "xHSPX",
+        "CATBAL"
+      ],
+      "addresses": [
+        "0x91483330b5953895757b65683d1272d86d6430B3",
+        "0x26272928f2395452090143Cf347aa85f78cDa3E8"
+      ],
+      "errors": {
+        "rateQuery": "missing revert data (action=\"call\", data=null, reason=null, transaction={ \"data\": \"0xd06ca61f0000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "xHSPX-HFUN",
+      "symbols": [
+        "xHSPX",
+        "HFUN"
+      ],
+      "addresses": [
+        "0x91483330b5953895757b65683d1272d86d6430B3",
+        "0x37adB2550b965851593832a6444763eeB3e1d1Ec"
+      ],
+      "errors": {
+        "rateQuery": "missing revert data (action=\"call\", data=null, reason=null, transaction={ \"data\": \"0xd06ca61f0000000"
+      },
+      "status": "unavailable"
+    },
+    {
+      "pair": "xHSPX-POINTS",
+      "symbols": [
+        "xHSPX",
+        "POINTS"
+      ],
+      "addresses": [
+        "0x91483330b5953895757b65683d1272d86d6430B3",
+        "0xFe1E6dAC7601724768C5d84Eb8E1b2f6F1314BDe"
+      ],
+      "errors": {
+        "rateQuery": "missing revert data (action=\"call\", data=null, reason=null, transaction={ \"data\": \"0xd06ca61f0000000"
+      },
+      "status": "unavailable"
+    }
+  ],
+  "metadata": {
+    "analyzedAt": "2025-07-07T21:04:21.413Z",
+    "chainId": 998,
+    "blockNumber": 26348889,
+    "testAmount": "0.01",
+    "slippageTolerance": "5%"
+  }
+}

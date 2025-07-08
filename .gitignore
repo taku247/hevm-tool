@@ -114,6 +114,17 @@ custom/**/test-data/
 custom/**/private/
 custom/**/local/
 
+# Hardhat files
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Custom deploy logs and sensitive data
+custom/deploy/arbitrage_detailed_log.txt
+custom/deploy/*.log
+custom/deploy/logs/
+
 # TypeScript
 *.tsbuildinfo
 

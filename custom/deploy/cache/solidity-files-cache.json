@@ -105,6 +105,268 @@
       "artifacts": [
         "SimpleToken"
       ]
+    },
+    "/Users/moriwakikeita/tools/hyperevm-tool/custom/deploy/contracts/MultiSwap.sol": {
+      "lastModificationDate": 1751919138808,
+      "contentHash": "703a21165981eb5b7923b2d64020c3f8",
+      "sourceName": "contracts/MultiSwap.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IV2Router",
+        "IV3Router",
+        "MultiSwap"
+      ]
+    },
+    "/Users/moriwakikeita/tools/hyperevm-tool/custom/deploy/contracts/MultiSwapDebug.sol": {
+      "lastModificationDate": 1751918346709,
+      "contentHash": "d470b481472ce94edfbe48a3f7c2b800",
+      "sourceName": "contracts/MultiSwapDebug.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IV2Router",
+        "IV3Router",
+        "MultiSwapDebug"
+      ]
+    },
+    "/Users/moriwakikeita/tools/hyperevm-tool/custom/deploy/contracts/MultiSwapLite.sol": {
+      "lastModificationDate": 1751918569513,
+      "contentHash": "e0d66e0ffded73f751ae532527135ce5",
+      "sourceName": "contracts/MultiSwapLite.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IV2Router",
+        "IV3Router",
+        "MultiSwapLite"
+      ]
+    },
+    "/Users/moriwakikeita/tools/hyperevm-tool/custom/deploy/contracts/MultiSwapV3Only.sol": {
+      "lastModificationDate": 1751918679479,
+      "contentHash": "6c93e97ea06e34705b413737643b9323",
+      "sourceName": "contracts/MultiSwapV3Only.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IV3Router",
+        "MultiSwapV3Only"
+      ]
+    },
+    "/Users/moriwakikeita/tools/hyperevm-tool/custom/deploy/contracts/MultiSwapFlexible.sol": {
+      "lastModificationDate": 1751925037180,
+      "contentHash": "27585ffcb77ddb6dd2a5521a94999d88",
+      "sourceName": "contracts/MultiSwapFlexible.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IV3Router",
+        "MultiSwapFlexible"
+      ]
+    },
+    "/Users/moriwakikeita/tools/hyperevm-tool/custom/deploy/contracts/MultiSwapOptimized.sol": {
+      "lastModificationDate": 1751925167511,
+      "contentHash": "4d174811bfa3fdf4d1830aa38b9eb936",
+      "sourceName": "contracts/MultiSwapOptimized.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IV3Router",
+        "MultiSwapOptimized"
+      ]
+    },
+    "/Users/moriwakikeita/tools/hyperevm-tool/custom/deploy/contracts/MultiSwapArbitrageSimple.sol": {
+      "lastModificationDate": 1751931050754,
+      "contentHash": "506fe56e1d259b2d59d7833112d6047b",
+      "sourceName": "contracts/MultiSwapArbitrageSimple.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IV3Router",
+        "MultiSwapArbitrageSimple"
+      ]
     }
   }
 }
