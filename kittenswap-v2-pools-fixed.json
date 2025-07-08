@@ -1,0 +1,46 @@
+{
+  "summary": {
+    "searchedTokens": 7,
+    "discoveredPools": 0,
+    "totalFactoryPairs": "70",
+    "timestamp": "2025-07-08T18:43:39.504Z"
+  },
+  "tokens": {
+    "WHYPE": {
+      "address": "0x5555555555555555555555555555555555555555",
+      "symbol": "WHYPE",
+      "name": "Wrapped HYPE"
+    },
+    "PURR": {
+      "address": "0x9b498C3c8A0b8CD8BA1D9851d40D186F1872b44E",
+      "symbol": "PURR",
+      "name": "Purr"
+    },
+    "USDXL": {
+      "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+      "symbol": "USDXL",
+      "name": "Last USD"
+    },
+    "KEI": {
+      "address": "0xB5fE77d323d69eB352A02006eA8ecC38D882620C",
+      "symbol": "KEI",
+      "name": "KEI Stablecoin"
+    },
+    "LHYPE": {
+      "address": "0x5748ae796AE46A4F1348a1693de4b50560485562",
+      "symbol": "LHYPE",
+      "name": "Looped HYPE"
+    },
+    "feUSD": {
+      "address": "0x02c6a2fA58cC01A18B8D9E00eA48d65E4dF26c70",
+      "symbol": "feUSD",
+      "name": "feUSD"
+    },
+    "BUDDY": {
+      "address": "0x47bb061C0204Af921F43DC73C7D7768d2672DdEE",
+      "symbol": "BUDDY",
+      "name": "alright buddy"
+    }
+  },
+  "pools": []
+}

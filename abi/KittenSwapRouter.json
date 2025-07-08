@@ -1,0 +1,75 @@
+[
+  {
+    "name": "exactInput",
+    "type": "function",
+    "stateMutability": "payable",
+    "inputs": [
+      {
+        "name": "param0",
+        "type": "tuple"
+      },
+      {
+        "name": "param1",
+        "type": "address"
+      },
+      {
+        "name": "param2",
+        "type": "uint256"
+      },
+      {
+        "name": "param3",
+        "type": "uint256"
+      },
+      {
+        "name": "param4",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amountOut",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "name": "exactOutput",
+    "type": "function",
+    "stateMutability": "payable",
+    "inputs": [
+      {
+        "name": "param0",
+        "type": "tuple"
+      },
+      {
+        "name": "param1",
+        "type": "address"
+      },
+      {
+        "name": "param2",
+        "type": "uint256"
+      },
+      {
+        "name": "param3",
+        "type": "uint256"
+      },
+      {
+        "name": "param4",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amountOut",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "name": "factory",
+    "type": "function",
+    "stateMutability": "view",
+    "inputs": [],
+    "outputs": []
+  }
+]

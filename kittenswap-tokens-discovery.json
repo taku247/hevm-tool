@@ -1,0 +1,551 @@
+{
+  "summary": {
+    "totalPairsInFactory": "70",
+    "analyzedPairs": 20,
+    "uniqueTokens": 13,
+    "topTokens": [
+      [
+        "WHYPE",
+        13
+      ],
+      [
+        "USDXL",
+        7
+      ],
+      [
+        "KEI",
+        3
+      ],
+      [
+        "LHYPE",
+        3
+      ],
+      [
+        "feUSD",
+        3
+      ],
+      [
+        "wstHYPE",
+        2
+      ],
+      [
+        "BUDDY",
+        2
+      ],
+      [
+        "PURR",
+        2
+      ],
+      [
+        "PAWS",
+        1
+      ],
+      [
+        "MATE",
+        1
+      ]
+    ]
+  },
+  "pairs": [
+    {
+      "index": 0,
+      "address": "0x3a9a876DA842195B6e9166a6ba9D261d188DaED4",
+      "pairSymbol": "vAMM-WHYPE/PAWS",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xe3C80b7A1A8631E8cFd59c61E2a74Eb497dB28F6",
+        "symbol": "PAWS",
+        "name": "Paws",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "29.481325983312992084",
+        "reserve1": "9158.189459329631746052"
+      }
+    },
+    {
+      "index": 1,
+      "address": "0x7F5D1F93232702a951759a47A27dE08D35e9bbe8",
+      "pairSymbol": "sAMM-WHYPE/wstHYPE",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x94e8396e0869c9F2200760aF0621aFd240E1CF38",
+        "symbol": "wstHYPE",
+        "name": "Staked HYPE Shares",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "1402.559771148833754439",
+        "reserve1": "1034.934163660066648084"
+      }
+    },
+    {
+      "index": 2,
+      "address": "0xCE6Be3F8b0281a1D7cccb140485FF51d4D6b212B",
+      "pairSymbol": "vAMM-WHYPE/wstHYPE",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x94e8396e0869c9F2200760aF0621aFd240E1CF38",
+        "symbol": "wstHYPE",
+        "name": "Staked HYPE Shares",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "35.559217184867459491",
+        "reserve1": "35.342569842429273622"
+      }
+    },
+    {
+      "index": 3,
+      "address": "0xf9280DaaF6215eA6c69EA81C66293A5C87F224Fd",
+      "pairSymbol": "vAMM-WHYPE/KEI",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xB5fE77d323d69eB352A02006eA8ecC38D882620C",
+        "symbol": "KEI",
+        "name": "KEI Stablecoin",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "45.979910245756471397",
+        "reserve1": "1774.958312446800703832"
+      }
+    },
+    {
+      "index": 4,
+      "address": "0xf7514E114149bF88766a28C23722B91f2CfA5Cb0",
+      "pairSymbol": "vAMM-WHYPE/MATE",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xC697Cfec4d5911961F072396FA997582Dc5851f1",
+        "symbol": "MATE",
+        "name": "HypeMates",
+        "decimals": 0
+      },
+      "reserves": {
+        "reserve0": "0.000001037261773122",
+        "reserve1": "1"
+      }
+    },
+    {
+      "index": 5,
+      "address": "0xA19c3b27e3522b83D65b50fC3DF6c238D5DAce2b",
+      "pairSymbol": "vAMM-WHYPE/wMATE",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x6C268267b336B6B1C3DfE25c6950EC7c157e012B",
+        "symbol": "wMATE",
+        "name": "Wrapped HypeMate",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "0.000000000000000001",
+        "reserve1": "0.047543208322320388"
+      }
+    },
+    {
+      "index": 6,
+      "address": "0x3C1F6D843aF17d0d87c6924b633cB500047B67bF",
+      "pairSymbol": "sAMM-WHYPE/LHYPE",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x5748ae796AE46A4F1348a1693de4b50560485562",
+        "symbol": "LHYPE",
+        "name": "Looped HYPE",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "9047.254951408493076767",
+        "reserve1": "6367.11548664575227114"
+      }
+    },
+    {
+      "index": 7,
+      "address": "0x50eFFA7395eF2DAA52EC25F6DD0E2030F529591E",
+      "pairSymbol": "vAMM-BUDDY/WHYPE",
+      "token0": {
+        "address": "0x47bb061C0204Af921F43DC73C7D7768d2672DdEE",
+        "symbol": "BUDDY",
+        "name": "alright buddy",
+        "decimals": 6
+      },
+      "token1": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "564303.73027",
+        "reserve1": "184.901253475730798696"
+      }
+    },
+    {
+      "index": 8,
+      "address": "0x7f4ED92F7B7D121eAe6234A3d2CC96C2EdF192C0",
+      "pairSymbol": "sAMM-BUDDY/WHYPE",
+      "token0": {
+        "address": "0x47bb061C0204Af921F43DC73C7D7768d2672DdEE",
+        "symbol": "BUDDY",
+        "name": "alright buddy",
+        "decimals": 6
+      },
+      "token1": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "235262.321786",
+        "reserve1": "25.625144908900231282"
+      }
+    },
+    {
+      "index": 9,
+      "address": "0x167694a7f08A88d4ccC531215cF3883081Cc9e0a",
+      "pairSymbol": "vAMM-LHYPE/BULBUL",
+      "token0": {
+        "address": "0x5748ae796AE46A4F1348a1693de4b50560485562",
+        "symbol": "LHYPE",
+        "name": "Looped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x99750393c5B40093A53ccD2d8e9f61EF4F401826",
+        "symbol": "BULBUL",
+        "name": "BULBUL2DAO",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "0.000013905953799526",
+        "reserve1": "1.132875389682091595"
+      }
+    },
+    {
+      "index": 10,
+      "address": "0x11F5711Da425d38B459388032744B1ceffcb682f",
+      "pairSymbol": "sAMM-fHYPE/WHYPE",
+      "token0": {
+        "address": "0x34a70Db6c0E3d5f93d7026fa6dCd6e11adFd56C5",
+        "symbol": "fHYPE",
+        "name": "flashHYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "0.0",
+        "reserve1": "0.0"
+      }
+    },
+    {
+      "index": 11,
+      "address": "0xeB01c8e4f5f4527516a676cea7d8603f22789Ec8",
+      "pairSymbol": "vAMM-feUSD/WHYPE",
+      "token0": {
+        "address": "0x02c6a2fA58cC01A18B8D9E00eA48d65E4dF26c70",
+        "symbol": "feUSD",
+        "name": "feUSD",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "1829.581758085364282979",
+        "reserve1": "47.740614365414270524"
+      }
+    },
+    {
+      "index": 12,
+      "address": "0x8494f537DD2a6B2bb1cf60632473eD3473204b56",
+      "pairSymbol": "vAMM-WHYPE/USDXL",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "178.256358059655247089",
+        "reserve1": "6864.479633977233992093"
+      }
+    },
+    {
+      "index": 13,
+      "address": "0xeDdd36cABD1D6BcE2e9F6D40162943B2346C7e7B",
+      "pairSymbol": "sAMM-KEI/USDXL",
+      "token0": {
+        "address": "0xB5fE77d323d69eB352A02006eA8ecC38D882620C",
+        "symbol": "KEI",
+        "name": "KEI Stablecoin",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "6420.60199298372202388",
+        "reserve1": "5525.92475474252348346"
+      }
+    },
+    {
+      "index": 14,
+      "address": "0xFf8B8F31f4027C245a5e521Fab0D7c50da5cDdFe",
+      "pairSymbol": "vAMM-LHYPE/USDXL",
+      "token0": {
+        "address": "0x5748ae796AE46A4F1348a1693de4b50560485562",
+        "symbol": "LHYPE",
+        "name": "Looped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "47.327682328940864201",
+        "reserve1": "1836.69822423780440549"
+      }
+    },
+    {
+      "index": 15,
+      "address": "0x6c9408dE11F3AD1388dE1c4Fe011520c757D93B5",
+      "pairSymbol": "vAMM-WHYPE/PURR",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x9b498C3c8A0b8CD8BA1D9851d40D186F1872b44E",
+        "symbol": "PURR",
+        "name": "Purr",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "579.787883131561536393",
+        "reserve1": "120493.225306952479569713"
+      }
+    },
+    {
+      "index": 16,
+      "address": "0x5c06758C2D322daDB9b2E2e708F49cD5FA75877c",
+      "pairSymbol": "vAMM-PURR/USDXL",
+      "token0": {
+        "address": "0x9b498C3c8A0b8CD8BA1D9851d40D186F1872b44E",
+        "symbol": "PURR",
+        "name": "Purr",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "3269.091133205965653401",
+        "reserve1": "604.291947707156077971"
+      }
+    },
+    {
+      "index": 17,
+      "address": "0xDfc16B0e5Cc1E2395887c7E912AA026CA0742cb5",
+      "pairSymbol": "vAMM-feUSD/USDXL",
+      "token0": {
+        "address": "0x02c6a2fA58cC01A18B8D9E00eA48d65E4dF26c70",
+        "symbol": "feUSD",
+        "name": "feUSD",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "37.910341971492673949",
+        "reserve1": "38.163957857186380322"
+      }
+    },
+    {
+      "index": 18,
+      "address": "0x9B14B3E8EAeb2F2791C48c22e4aE9dCb21908c60",
+      "pairSymbol": "sAMM-feUSD/USDXL",
+      "token0": {
+        "address": "0x02c6a2fA58cC01A18B8D9E00eA48d65E4dF26c70",
+        "symbol": "feUSD",
+        "name": "feUSD",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "3410.154601095595964017",
+        "reserve1": "4490.266459092610579203"
+      }
+    },
+    {
+      "index": 19,
+      "address": "0x31C4F84e382a1D84cA70Dc7a5e1C0Cf722cbe727",
+      "pairSymbol": "vAMM-KEI/USDXL",
+      "token0": {
+        "address": "0xB5fE77d323d69eB352A02006eA8ecC38D882620C",
+        "symbol": "KEI",
+        "name": "KEI Stablecoin",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "135.95443825747089542",
+        "reserve1": "135.197715581475905167"
+      }
+    }
+  ],
+  "tokens": {
+    "WHYPE": {
+      "address": "0x5555555555555555555555555555555555555555",
+      "symbol": "WHYPE",
+      "name": "Wrapped HYPE",
+      "decimals": 18
+    },
+    "PAWS": {
+      "address": "0xe3C80b7A1A8631E8cFd59c61E2a74Eb497dB28F6",
+      "symbol": "PAWS",
+      "name": "Paws",
+      "decimals": 18
+    },
+    "wstHYPE": {
+      "address": "0x94e8396e0869c9F2200760aF0621aFd240E1CF38",
+      "symbol": "wstHYPE",
+      "name": "Staked HYPE Shares",
+      "decimals": 18
+    },
+    "KEI": {
+      "address": "0xB5fE77d323d69eB352A02006eA8ecC38D882620C",
+      "symbol": "KEI",
+      "name": "KEI Stablecoin",
+      "decimals": 18
+    },
+    "MATE": {
+      "address": "0xC697Cfec4d5911961F072396FA997582Dc5851f1",
+      "symbol": "MATE",
+      "name": "HypeMates",
+      "decimals": 0
+    },
+    "wMATE": {
+      "address": "0x6C268267b336B6B1C3DfE25c6950EC7c157e012B",
+      "symbol": "wMATE",
+      "name": "Wrapped HypeMate",
+      "decimals": 18
+    },
+    "LHYPE": {
+      "address": "0x5748ae796AE46A4F1348a1693de4b50560485562",
+      "symbol": "LHYPE",
+      "name": "Looped HYPE",
+      "decimals": 18
+    },
+    "BUDDY": {
+      "address": "0x47bb061C0204Af921F43DC73C7D7768d2672DdEE",
+      "symbol": "BUDDY",
+      "name": "alright buddy",
+      "decimals": 6
+    },
+    "BULBUL": {
+      "address": "0x99750393c5B40093A53ccD2d8e9f61EF4F401826",
+      "symbol": "BULBUL",
+      "name": "BULBUL2DAO",
+      "decimals": 18
+    },
+    "fHYPE": {
+      "address": "0x34a70Db6c0E3d5f93d7026fa6dCd6e11adFd56C5",
+      "symbol": "fHYPE",
+      "name": "flashHYPE",
+      "decimals": 18
+    },
+    "feUSD": {
+      "address": "0x02c6a2fA58cC01A18B8D9E00eA48d65E4dF26c70",
+      "symbol": "feUSD",
+      "name": "feUSD",
+      "decimals": 18
+    },
+    "USDXL": {
+      "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+      "symbol": "USDXL",
+      "name": "Last USD",
+      "decimals": 18
+    },
+    "PURR": {
+      "address": "0x9b498C3c8A0b8CD8BA1D9851d40D186F1872b44E",
+      "symbol": "PURR",
+      "name": "Purr",
+      "decimals": 18
+    }
+  }
+}

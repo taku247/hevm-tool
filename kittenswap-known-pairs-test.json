@@ -1,0 +1,144 @@
+{
+  "summary": {
+    "tested": 5,
+    "successful": 5,
+    "timestamp": "2025-07-08T18:46:29.957Z"
+  },
+  "results": [
+    {
+      "pairAddress": "0x6c9408dE11F3AD1388dE1c4Fe011520c757D93B5",
+      "pairSymbol": "vAMM-WHYPE/PURR",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x9b498C3c8A0b8CD8BA1D9851d40D186F1872b44E",
+        "symbol": "PURR",
+        "name": "Purr",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "580.697000979913749048",
+        "reserve1": "120304.585548959542936693",
+        "reserve0Raw": "580697000979913749048",
+        "reserve1Raw": "120304585548959542936693"
+      },
+      "totalSupply": "0.018717081966587095",
+      "rates": {
+        "token0To1": 207.17273439667872,
+        "token1To0": 0.004826890000328303
+      }
+    },
+    {
+      "pairAddress": "0x8494f537DD2a6B2bb1cf60632473eD3473204b56",
+      "pairSymbol": "vAMM-WHYPE/USDXL",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "177.811044573396285543",
+        "reserve1": "6881.671172132212027464",
+        "reserve0Raw": "177811044573396285543",
+        "reserve1Raw": "6881671172132212027464"
+      },
+      "totalSupply": "1104.433989037332809265",
+      "rates": {
+        "token0To1": 38.702158173822646,
+        "token1To0": 0.025838352360318236
+      }
+    },
+    {
+      "pairAddress": "0xeDdd36cABD1D6BcE2e9F6D40162943B2346C7e7B",
+      "pairSymbol": "sAMM-KEI/USDXL",
+      "token0": {
+        "address": "0xB5fE77d323d69eB352A02006eA8ecC38D882620C",
+        "symbol": "KEI",
+        "name": "KEI Stablecoin",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "5829.527922783782203922",
+        "reserve1": "6116.905877428837367342",
+        "reserve0Raw": "5829527922783782203922",
+        "reserve1Raw": "6116905877428837367342"
+      },
+      "totalSupply": "5967.720485083705118473",
+      "rates": {
+        "token0To1": 1.049296951391533,
+        "token1To0": 0.9530190654550579
+      }
+    },
+    {
+      "pairAddress": "0x5c06758C2D322daDB9b2E2e708F49cD5FA75877c",
+      "pairSymbol": "vAMM-PURR/USDXL",
+      "token0": {
+        "address": "0x9b498C3c8A0b8CD8BA1D9851d40D186F1872b44E",
+        "symbol": "PURR",
+        "name": "Purr",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+        "symbol": "USDXL",
+        "name": "Last USD",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "3260.056189630708868191",
+        "reserve1": "605.966686832169332829",
+        "reserve0Raw": "3260056189630708868191",
+        "reserve1Raw": "605966686832169332829"
+      },
+      "totalSupply": "1405.157326344501146155",
+      "rates": {
+        "token0To1": 0.18587614801228677,
+        "token1To0": 5.379926422479435
+      }
+    },
+    {
+      "pairAddress": "0x3C1F6D843aF17d0d87c6924b633cB500047B67bF",
+      "pairSymbol": "sAMM-WHYPE/LHYPE",
+      "token0": {
+        "address": "0x5555555555555555555555555555555555555555",
+        "symbol": "WHYPE",
+        "name": "Wrapped HYPE",
+        "decimals": 18
+      },
+      "token1": {
+        "address": "0x5748ae796AE46A4F1348a1693de4b50560485562",
+        "symbol": "LHYPE",
+        "name": "Looped HYPE",
+        "decimals": 18
+      },
+      "reserves": {
+        "reserve0": "9047.254951408493076767",
+        "reserve1": "6367.11548664575227114",
+        "reserve0Raw": "9047254951408493076767",
+        "reserve1Raw": "6367115486645752271140"
+      },
+      "totalSupply": "7705.414413667925297624",
+      "rates": {
+        "token0To1": 0.703762137890732,
+        "token1To0": 1.420934639929809
+      }
+    }
+  ]
+}

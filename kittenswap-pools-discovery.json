@@ -1,0 +1,9 @@
+{
+  "mainnet": {
+    "v2Pools": [],
+    "v3Pools": []
+  },
+  "testnet": {
+    "availablePairs": []
+  }
+}

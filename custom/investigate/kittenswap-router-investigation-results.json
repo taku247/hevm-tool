@@ -1,0 +1,414 @@
+{
+  "Router": {
+    "address": "0xd6eeffbdaf6503ad6539cf8f337d79bebbd40802",
+    "size": 163,
+    "totalFunctions": 2,
+    "routerFunctions": [],
+    "hasGetAmountsOut": false,
+    "signatures": [
+      {
+        "selector": "0x43000818"
+      },
+      {
+        "selector": "0x828492db"
+      }
+    ]
+  },
+  "SwapRouter": {
+    "address": "0x8fFDB06039B1b8188c2C721Dc3C435B5773D7346",
+    "size": 9908,
+    "totalFunctions": 54,
+    "routerFunctions": [
+      {
+        "selector": "0xc45a0155",
+        "funcName": "factory()"
+      },
+      {
+        "selector": "0xc04b8d59",
+        "funcName": "exactInput((bytes,address,uint256,uint256,uint256))"
+      },
+      {
+        "selector": "0xf28c0498",
+        "funcName": "exactOutput((bytes,address,uint256,uint256,uint256))"
+      }
+    ],
+    "hasGetAmountsOut": false,
+    "signatures": [
+      {
+        "selector": "0xc04b8d59",
+        "signature": "exactInput((bytes,address,uint256,uint256,uint256))",
+        "name": "exactInput"
+      },
+      {
+        "selector": "0xdf2ab5bb"
+      },
+      {
+        "selector": "0xe0e189a0"
+      },
+      {
+        "selector": "0xf28c0498",
+        "signature": "exactOutput((bytes,address,uint256,uint256,uint256))",
+        "name": "exactOutput"
+      },
+      {
+        "selector": "0xf3995c67"
+      },
+      {
+        "selector": "0xfa461e33"
+      },
+      {
+        "selector": "0xc2e3140a"
+      },
+      {
+        "selector": "0xc45a0155",
+        "signature": "factory()",
+        "name": "factory"
+      },
+      {
+        "selector": "0xc714e838"
+      },
+      {
+        "selector": "0x9b2c0a37"
+      },
+      {
+        "selector": "0xa026383e"
+      },
+      {
+        "selector": "0xa4a78f0c"
+      },
+      {
+        "selector": "0xac9650d8"
+      },
+      {
+        "selector": "0x12210e8a"
+      },
+      {
+        "selector": "0x4659a494"
+      },
+      {
+        "selector": "0x49404b7c"
+      },
+      {
+        "selector": "0x4aa4a4fc"
+      },
+      {
+        "selector": "0x79477561"
+      },
+      {
+        "selector": "0x616c6c00"
+      },
+      {
+        "selector": "0x23f2ebc3"
+      },
+      {
+        "selector": "0x8fcbaf0c"
+      },
+      {
+        "selector": "0x70a08231",
+        "signature": "balanceOf(address)",
+        "name": "balanceOf"
+      },
+      {
+        "selector": "0x2e1a7d4d"
+      },
+      {
+        "selector": "0x6eb1769f"
+      },
+      {
+        "selector": "0xdd62ed3e",
+        "signature": "allowance(address,address)",
+        "name": "allowance"
+      },
+      {
+        "selector": "0x60608b01"
+      },
+      {
+        "selector": "0xd505accf"
+      },
+      {
+        "selector": "0x128acb08"
+      },
+      {
+        "selector": "0xefd1fc6a"
+      },
+      {
+        "selector": "0x988d2561"
+      },
+      {
+        "selector": "0x8f6118e6"
+      },
+      {
+        "selector": "0xa9059cbb",
+        "signature": "transfer(address,uint256)",
+        "name": "transfer"
+      },
+      {
+        "selector": "0xd0e30db0"
+      },
+      {
+        "selector": "0x01415611"
+      },
+      {
+        "selector": "0x23b872dd",
+        "signature": "transferFrom(address,address,uint256)",
+        "name": "transferFrom"
+      },
+      {
+        "selector": "0xcefa7799"
+      },
+      {
+        "selector": "0xd3d373d3"
+      },
+      {
+        "selector": "0xd7360601"
+      },
+      {
+        "selector": "0x5611ff18"
+      },
+      {
+        "selector": "0xa565b600"
+      },
+      {
+        "selector": "0xa565b601"
+      },
+      {
+        "selector": "0xd565b838"
+      },
+      {
+        "selector": "0xfd844266"
+      },
+      {
+        "selector": "0x43000706"
+      },
+      {
+        "selector": "0x1461018c"
+      },
+      {
+        "selector": "0x565b9150"
+      },
+      {
+        "selector": "0x565b6060"
+      },
+      {
+        "selector": "0x7573d600"
+      },
+      {
+        "selector": "0x57604080"
+      },
+      {
+        "selector": "0x83600160"
+      },
+      {
+        "selector": "0x81612666"
+      },
+      {
+        "selector": "0x578182fd"
+      },
+      {
+        "selector": "0x8383611f"
+      },
+      {
+        "selector": "0x60208301"
+      }
+    ]
+  },
+  "QuoterV2": {
+    "address": "0xd9949cB0655E8D5167373005Bd85f814c8E0C9BF",
+    "size": 6934,
+    "totalFunctions": 30,
+    "routerFunctions": [
+      {
+        "selector": "0xc45a0155",
+        "funcName": "factory()"
+      },
+      {
+        "selector": "0xcdca1753",
+        "funcName": "quoteExactInput(bytes,uint256)"
+      },
+      {
+        "selector": "0x2f80bb1d",
+        "funcName": "quoteExactOutput(bytes,uint256)"
+      }
+    ],
+    "hasGetAmountsOut": false,
+    "signatures": [
+      {
+        "selector": "0xc45a0155",
+        "signature": "factory()",
+        "name": "factory"
+      },
+      {
+        "selector": "0xcdca1753",
+        "signature": "quoteExactInput(bytes,uint256)",
+        "name": "quoteExactInput"
+      },
+      {
+        "selector": "0xfa461e33"
+      },
+      {
+        "selector": "0xfa6af908"
+      },
+      {
+        "selector": "0x2f80bb1d",
+        "signature": "quoteExactOutput(bytes,uint256)",
+        "name": "quoteExactOutput"
+      },
+      {
+        "selector": "0x4aa4a4fc"
+      },
+      {
+        "selector": "0x9e7defe6"
+      },
+      {
+        "selector": "0x128acb08"
+      },
+      {
+        "selector": "0xefd1fc6a"
+      },
+      {
+        "selector": "0x988d2561"
+      },
+      {
+        "selector": "0x18e6109b"
+      },
+      {
+        "selector": "0xf8e6109c"
+      },
+      {
+        "selector": "0x3850c7bd"
+      },
+      {
+        "selector": "0xcefa7799"
+      },
+      {
+        "selector": "0xd0c93a7c"
+      },
+      {
+        "selector": "0x5339c296"
+      },
+      {
+        "selector": "0x565b61ff"
+      },
+      {
+        "selector": "0xd3d373d3"
+      },
+      {
+        "selector": "0xd7360601"
+      },
+      {
+        "selector": "0xe81611ab"
+      },
+      {
+        "selector": "0x3a80f74b"
+      },
+      {
+        "selector": "0x43000706"
+      },
+      {
+        "selector": "0x7565b600"
+      },
+      {
+        "selector": "0x565b67ff"
+      },
+      {
+        "selector": "0x7565b935"
+      },
+      {
+        "selector": "0x6565b505"
+      },
+      {
+        "selector": "0x6565b509"
+      },
+      {
+        "selector": "0x57805183"
+      },
+      {
+        "selector": "0x60405181"
+      },
+      {
+        "selector": "0xc9ce1459"
+      }
+    ]
+  },
+  "PairFactory": {
+    "address": "0xDa12F450580A4cc485C3b501BAB7b0B3cbc3B31B",
+    "size": 163,
+    "totalFunctions": 2,
+    "routerFunctions": [],
+    "hasGetAmountsOut": false,
+    "signatures": [
+      {
+        "selector": "0x43000818"
+      },
+      {
+        "selector": "0x828492db"
+      }
+    ]
+  },
+  "CLFactory": {
+    "address": "0x2E08F5Ff603E4343864B14599CAeDb19918BDCaF",
+    "size": 1129,
+    "totalFunctions": 14,
+    "routerFunctions": [],
+    "hasGetAmountsOut": false,
+    "signatures": [
+      {
+        "selector": "0x30361007"
+      },
+      {
+        "selector": "0x278f7943"
+      },
+      {
+        "selector": "0x34ad5dbb"
+      },
+      {
+        "selector": "0xb5f03610"
+      },
+      {
+        "selector": "0x4c9c8ce3"
+      },
+      {
+        "selector": "0xb398979f"
+      },
+      {
+        "selector": "0xb155b156"
+      },
+      {
+        "selector": "0x9996b315"
+      },
+      {
+        "selector": "0xd6bda275"
+      },
+      {
+        "selector": "0x4e487b71"
+      },
+      {
+        "selector": "0x43000818"
+      },
+      {
+        "selector": "0xd75a20ee"
+      },
+      {
+        "selector": "0x828492db"
+      },
+      {
+        "selector": "0x64025339"
+      }
+    ]
+  },
+  "FactoryRegistry": {
+    "address": "0x8C142521ebB1aC1cC1F0958037702A69b6f608e4",
+    "size": 163,
+    "totalFunctions": 2,
+    "routerFunctions": [],
+    "hasGetAmountsOut": false,
+    "signatures": [
+      {
+        "selector": "0x43000818"
+      },
+      {
+        "selector": "0x828492db"
+      }
+    ]
+  }
+}

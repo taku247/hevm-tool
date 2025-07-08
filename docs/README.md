@@ -1,193 +1,128 @@
-# Hyperevm Chain Tools - 設計ドキュメント
+# HyperEVM Tools ドキュメント
 
-このディレクトリには、Hyperevm Chain Toolsプロジェクトの設計ドキュメントが含まれています。
+## 📚 ドキュメント一覧
 
-## 📋 ドキュメント一覧
+### 🚀 はじめに
+- **[クイックスタート](./QUICKSTART.md)** - 5分で始める
+- **[プロジェクト構造](./PROJECT_STRUCTURE.md)** - ディレクトリ構成と使い分け
 
-### 1. [アーキテクチャ設計書](./architecture.md)
-- システム概要と全体アーキテクチャ
-- コンポーネント設計
-- 技術スタック
-- セキュリティ設計
-- 拡張性と運用設計
+### 📖 詳細ガイド
+- **[スクリプトガイド](./SCRIPTS_GUIDE.md)** - 各スクリプトの使用方法
+- **[開発者ガイド](./DEVELOPER_GUIDE.md)** - 新規開発の手順
+- **[APIリファレンス](./API_REFERENCE.md)** - クラス・関数の詳細
+- **[KittenSwap統合ガイド](./KITTENSWAP_INTEGRATION.md)** 🆕 - KittenSwap特有の実装方法
 
-### 2. [API仕様書](./api-specification.md)
-- REST APIエンドポイント
-- WebSocket API
-- スクリプト仕様
-- エラーハンドリング
-- 使用例
+### 📋 インデックス
+- **[カスタムスクリプト一覧](./CUSTOM_SCRIPTS_INDEX.md)** - custom/配下の全スクリプト解説
 
-### 3. [データフロー設計書](./data-flow.md)
-- 全体データフロー
-- コンポーネント間データフロー
-- エラーハンドリングフロー
-- 状態管理
-- パフォーマンス最適化
+### 🔧 既存ドキュメント
+- **[アーキテクチャ設計書](./architecture.md)** - システム全体アーキテクチャ
+- **[API仕様書](./api-specification.md)** - REST/WebSocket API仕様
+- **[データフロー設計書](./data-flow.md)** - データフロー設計
+- **[デプロイメント設計書](./deployment.md)** - デプロイメント設計
 
-### 4. [デプロイメント設計書](./deployment.md)
-- デプロイメント環境
-- インフラストラクチャ設計
-- CI/CDパイプライン
-- 監視とログ
-- セキュリティ設定
+## 🎯 目的別ガイド
 
-## 🎯 プロジェクト概要
+### トークンスワップを行いたい
+1. [クイックスタート](./QUICKSTART.md) のケース1を参照
+2. [カスタムスクリプト一覧](./CUSTOM_SCRIPTS_INDEX.md) の hyperevm-swap セクション
 
-Hyperevm Chain Toolsは、Hyperevm（HyperLiquid EVM）ブロックチェーンとの相互作用を簡素化するための包括的なツールセットです。以下の主要機能を提供します：
+### アービトラージbotを作りたい
+1. [MultiSwap アービトラージ](../custom/deploy/multiswap-arbitrage-memo.md) を読む
+2. [開発者ガイド](./DEVELOPER_GUIDE.md) のパターン3を参照
 
-### 主要機能
-- **残高確認**: 指定されたアドレスの残高をチェック
-- **トランザクション送信**: ETH送金とスマートコントラクトデプロイ
-- **コントラクト相互作用**: スマートコントラクトの読み取り・書き込み操作
-- **Webダッシュボード**: リアルタイムでの操作と結果確認
+### 新しいDEXを統合したい
+1. [DEX統合ガイド](../src/dex/README.md) を読む
+2. [開発者ガイド](./DEVELOPER_GUIDE.md) のDEX統合開発セクション
+3. **KittenSwap統合の場合**: [KittenSwap統合ガイド](./KITTENSWAP_INTEGRATION.md) 🆕
 
-### 技術スタック
-- **Backend**: Node.js, Express.js, WebSocket
-- **Frontend**: Vanilla JavaScript, HTML5, CSS3
-- **Blockchain**: ethers.js, Hyperevm Network
-- **Deployment**: Docker, PM2, Nginx
+### ガス最適化したい
+1. [APIリファレンス](./API_REFERENCE.md) のガス価格ユーティリティ
+2. [スクリプトガイド](./SCRIPTS_GUIDE.md) の gas-analyzer.ts
+
+## 📊 機能マトリックス
+
+| 機能 | ドキュメント | サンプルコード |
+|------|-------------|---------------|
+| 残高確認 | [スクリプトガイド](./SCRIPTS_GUIDE.md#balance_checkjs) | `scripts/balance_check.js` |
+| トークンスワップ | [クイックスタート](./QUICKSTART.md#3-トークンスワップ2分) | `custom/hyperevm-swap/` |
+| アービトラージ | [MultiSwap詳細](../custom/deploy/multiswap-arbitrage-memo.md) | `custom/deploy/test-arbitrage-*.js` |
+| コントラクトデプロイ | [開発者ガイド](./DEVELOPER_GUIDE.md#deploycontract) | `templates/contract-deploy.ts` |
+| ガス分析 | [APIリファレンス](./API_REFERENCE.md#ガス価格ユーティリティ) | `templates/gas-analyzer.ts` |
+| DEX統合 | [DEX統合ガイド](../src/dex/README.md) | `src/dex/` |
+| Webダッシュボード | [API仕様書](./api-specification.md) | `dashboard/` |
 
 ## 🚀 クイックスタート
 
-### 前提条件
-- Node.js 18.0.0以上
-- yarn または npm
+詳細は[クイックスタートガイド](./QUICKSTART.md)を参照してください。
 
-### インストール
 ```bash
-# 依存関係のインストール
-yarn install
-
-# 環境変数の設定
+# 基本的な使い方
+git clone https://github.com/taku247/hevm-tool.git
+cd hevm-tool
+npm install
 cp .env.example .env
-# .envファイルを編集してRPC URLと秘密鍵を設定
-```
-
-### 起動
-```bash
-# ダッシュボードを起動
-yarn start
-
-# ブラウザで http://localhost:3000 にアクセス
+# .envを編集後
+node scripts/balance_check.js
 ```
 
 ## 📁 プロジェクト構造
 
+詳細は[プロジェクト構造ドキュメント](./PROJECT_STRUCTURE.md)を参照してください。
+
 ```
-hevm-tool/
-├── docs/                    # 設計ドキュメント
-│   ├── README.md           # このファイル
-│   ├── architecture.md     # アーキテクチャ設計
-│   ├── api-specification.md # API仕様
-│   ├── data-flow.md        # データフロー設計
-│   └── deployment.md       # デプロイメント設計
-├── scripts/                # コア機能スクリプト
-│   ├── balance_check.js    # 残高チェック
-│   ├── transaction_sender.js # トランザクション送信
-│   └── contract_interaction.js # コントラクト相互作用
-├── dashboard/              # Web UI
-│   ├── server.js          # Express サーバー
-│   └── public/
-│       └── index.html     # フロントエンド
-├── package.json           # Node.js依存関係
-├── .env                   # 環境変数
-└── README.md             # プロジェクト概要
+hyperevm-tool/
+├── scripts/          # 基本的なブロックチェーン操作スクリプト
+├── templates/        # 汎用TypeScriptテンプレート（推奨）
+├── custom/           # プロジェクト固有のカスタムスクリプト
+├── src/              # 共通ユーティリティとコアロジック
+├── tests/            # テストスイート
+├── docs/             # ドキュメント
+├── dashboard/        # Web UI
+└── abi/              # 共通ABI定義
 ```
 
-## 🔧 開発ガイド
+## 🔧 技術スタック
 
-### 新機能の追加
-1. `scripts/` ディレクトリに新しいスクリプトを追加
-2. `dashboard/server.js` の `allowedScripts` に追加
-3. API仕様書を更新
-4. テストを追加
+- **言語**: TypeScript, JavaScript (Node.js)
+- **ブロックチェーン**: ethers.js v6, HyperEVM
+- **Web**: Express.js, WebSocket
+- **テスト**: Mocha, Chai, Hardhat
+- **デプロイ**: Docker, PM2
 
-### コーディング規約
-- JavaScript ES6+を使用
-- 非同期処理にはasync/awaitを使用
-- エラーハンドリングは必須
-- コメントは日本語で記述
+## 🔄 更新履歴
 
-## 🛡️ セキュリティ
+### v2.0.0 (2025-01-08)
+- 包括的なドキュメント体系の構築
+- MultiSwapアービトラージ実装（ChatGPT推奨）
+- 詳細ログ機能の追加
+- カスタムスクリプトインデックスの作成
+- **KittenSwap統合ガイド作成** 🆕
+- KittenSwap Factory分析・ABI最適化完了
 
-### 重要な注意事項
-- 秘密鍵は絶対に公開しない
-- 本番環境では適切なセキュリティ対策を実装
-- テストネットでの動作確認を推奨
+### v1.5.0 (2025-01-07)
+- DEX統合システムの実装
+- TypeScriptテンプレートの拡充
+- ガス最適化機能の強化
 
-### セキュリティ機能
-- 秘密鍵の検証
-- スクリプト実行の制限
-- 入力値の検証
-- エラー情報の適切な処理
+## 🤝 貢献方法
 
-## 📊 監視とログ
+1. このリポジトリをフォーク
+2. 機能ブランチを作成 (`git checkout -b feature/amazing-feature`)
+3. 変更をコミット (`git commit -m 'Add amazing feature'`)
+4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
+5. プルリクエストを作成
 
-### ログファイル
-- `logs/error.log` - エラーログ
-- `logs/combined.log` - 全ログ
-- `logs/access.log` - アクセスログ
+## 📝 ライセンス
 
-### 監視項目
-- アプリケーション起動状態
-- メモリ使用量
-- CPU使用率
-- ネットワーク接続状態
-
-## 🤝 貢献
-
-### 開発の流れ
-1. 課題を特定
-2. 機能を設計
-3. コードを実装
-4. テストを作成
-5. ドキュメントを更新
-6. レビューを受ける
-
-### コードレビュー
-- 設計原則の遵守
-- セキュリティの確認
-- パフォーマンスの評価
-- ドキュメントの更新
-
-## 📞 サポート
-
-### 問題報告
-- GitHub Issuesを使用
-- 詳細な再現手順を記載
-- 環境情報を含める
-
-### 質問・相談
-- 設計についての質問
-- 実装についての相談
-- 運用についての問い合わせ
-
-## 📄 ライセンス
-
-MIT License
+MIT License - 詳細は[LICENSE](../LICENSE)を参照
 
 ## 🗂️ 関連リンク
 
-- [Hyperevm公式ドキュメント](https://docs.hyperliquid.xyz/)
-- [ethers.js ドキュメント](https://docs.ethers.io/)
-- [Express.js ドキュメント](https://expressjs.com/)
-- [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+- [HyperLiquid公式](https://hyperliquid.xyz/)
+- [HyperEVM Docs](https://docs.hyperliquid.xyz/)
+- [GitHub Repository](https://github.com/taku247/hevm-tool)
 
 ---
 
-## 📝 変更履歴
-
-### Version 1.0.0 (2024-01-01)
-- 初期リリース
-- 基本機能の実装
-- 設計ドキュメントの作成
-
-### Version 1.1.0 (予定)
-- 認証機能の追加
-- バッチ処理機能
-- パフォーマンス改善
-
----
-
-*このドキュメントは継続的に更新されます。最新版を参照してください。*
+**お問い合わせ**: [GitHub Issues](https://github.com/taku247/hevm-tool/issues)
