@@ -114,6 +114,10 @@ custom/**/test-data/
 custom/**/private/
 custom/**/local/
 
+# Performance reports that may contain sensitive URLs
+*performance-report*.json
+*rpc-performance*.json
+
 # Hardhat files
 cache/
 artifacts/

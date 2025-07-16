@@ -141,10 +141,15 @@ async getQuote(
 
 **説明**: 指定DEXでの見積もりを取得  
 **パラメータ**:
-- `dexName`: DEX名（'hyperswap-v2', 'hyperswap-v3', 'kittenswap-v2'）
+- `dexName`: DEX名（'hyperswap-v1', 'hyperswap-v2', 'hyperswap-v3', 'kittenswap-v2', 'kittenswap-v3'）
 - `params`: スワップパラメータ
 
 **戻り値**: 予想出力量
+
+**サポートDEX**:
+- **Hyperswap V3**: 30ペア対応 (42.9%)
+- **KittenSwap V3**: 64ペア対応 (91.4%)
+- **主要ペア**: WHYPE/USDXL, WHYPE/UETH, WHYPE/PAWS, LHYPE/USDXL
 
 ##### executeSwap
 ```typescript
@@ -251,7 +256,8 @@ interface SwapParams {
   recipient?: string;   // 受取アドレス（省略時は送信者）
   slippageBps?: number; // スリッページ（ベーシスポイント）
   deadline?: number;    // デッドライン（秒）
-  fee?: number;         // V3手数料ティア（500, 3000, 10000）
+  fee?: number;         // V3手数料ティア（100, 500, 3000, 10000）
+  tickSpacing?: number; // KittenSwap V3 TickSpacing（200, 2000）
 }
 ```
 
@@ -283,6 +289,7 @@ interface DexConfig {
     [key: string]: {
       router: string;
       factory: string;
+      quoter?: string;       // V3 Quoter address
       initCodeHash?: string;
     };
   };
@@ -292,7 +299,36 @@ interface DexConfig {
       decimals: number;
     };
   };
+  supportedPairs?: string[]; // サポートペア一覧
 }
+```
+
+### 主要コントラクトアドレス
+```typescript
+// Hyperswap V3
+const HYPERSWAP_ADDRESSES = {
+  swapRouter01: "0xD81F56576B1FF2f3Ef18e9Cc71Adaa42516fD990",
+  swapRouter02: "0x51c5958FFb3e326F8d7AA945948159f1FF27e14A", 
+  quoterV2: "0x03A918028f22D9E1473B7959C927AD7425A45C7C",
+  factory: "0x9F3bEcdC6F9b433eCa712d3B931d4e3A5fC9a88E"
+};
+
+// KittenSwap V3
+const KITTENSWAP_ADDRESSES = {
+  swapRouter: "0xfc59c4C5fc18b8FD3Dc2Eb37A7df0d32c77CC55e",
+  quoterV2: "0xd9949cB0655E8D5167373005Bd85f814c8E0C9BF",
+  factory: "0x2E08F5Ff603E4343864B14599CAeDb19918BDCaF",
+  v2Factory: "0xDa12F450580A4cc485C3b501BAB7b0B3cbc3B31B" // ペア取得用
+};
+
+// 主要トークンアドレス
+const TOKEN_ADDRESSES = {
+  WHYPE: "0x5555555555555555555555555555555555555555",
+  USDXL: "0xca79db4B49f608eF54a5CB813FbEd3a6387bC645",
+  UETH: "0xBe6727B535545C67d5cAa73dEa54865B92CF7907",
+  PAWS: "0xe3C80b7A1A8631E8cFd59c61E2a74Eb497dB28F6",
+  LHYPE: "0x5748ae796AE46A4F1348a1693de4b50560485562"
+};
 ```
 
 ---

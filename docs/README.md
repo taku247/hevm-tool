@@ -10,7 +10,8 @@
 - **[スクリプトガイド](./SCRIPTS_GUIDE.md)** - 各スクリプトの使用方法
 - **[開発者ガイド](./DEVELOPER_GUIDE.md)** - 新規開発の手順
 - **[APIリファレンス](./API_REFERENCE.md)** - クラス・関数の詳細
-- **[KittenSwap統合ガイド](./KITTENSWAP_INTEGRATION.md)** 🆕 - KittenSwap特有の実装方法
+- **[トレーディングペアガイド](./TRADING_PAIRS_GUIDE.md)** 🆕 - 全70ペアの完全ガイド
+- **[KittenSwap統合ガイド](./KITTENSWAP_INTEGRATION.md)** - KittenSwap特有の実装方法
 
 ### 📋 インデックス
 - **[カスタムスクリプト一覧](./CUSTOM_SCRIPTS_INDEX.md)** - custom/配下の全スクリプト解説
@@ -24,12 +25,14 @@
 ## 🎯 目的別ガイド
 
 ### トークンスワップを行いたい
-1. [クイックスタート](./QUICKSTART.md) のケース1を参照
-2. [カスタムスクリプト一覧](./CUSTOM_SCRIPTS_INDEX.md) の hyperevm-swap セクション
+1. **[トレーディングペアガイド](./TRADING_PAIRS_GUIDE.md)** で利用可能ペアを確認 🆕
+2. [クイックスタート](./QUICKSTART.md) のケース1を参照
+3. [カスタムスクリプト一覧](./CUSTOM_SCRIPTS_INDEX.md) の hyperevm-swap セクション
 
 ### アービトラージbotを作りたい
-1. [MultiSwap アービトラージ](../custom/deploy/multiswap-arbitrage-memo.md) を読む
-2. [開発者ガイド](./DEVELOPER_GUIDE.md) のパターン3を参照
+1. **[トレーディングペアガイド](./TRADING_PAIRS_GUIDE.md)** でアービトラージ機会を分析 🆕
+2. [MultiSwap アービトラージ](../custom/deploy/multiswap-arbitrage-memo.md) を読む
+3. [開発者ガイド](./DEVELOPER_GUIDE.md) のパターン3を参照
 
 ### 新しいDEXを統合したい
 1. [DEX統合ガイド](../src/dex/README.md) を読む
@@ -44,9 +47,11 @@
 
 | 機能 | ドキュメント | サンプルコード |
 |------|-------------|---------------|
+| **ペア情報確認** | [トレーディングペアガイド](./TRADING_PAIRS_GUIDE.md) 🆕 | `/config/trading-pairs-mainnet-corrected.json` |
+| **DEXペア情報統合** | [カスタムスクリプト一覧](./CUSTOM_SCRIPTS_INDEX.md#dexペア情報統合システム) 🆕 | `custom/investigate/update-trading-pairs-master.js` |
 | 残高確認 | [スクリプトガイド](./SCRIPTS_GUIDE.md#balance_checkjs) | `scripts/balance_check.js` |
 | トークンスワップ | [クイックスタート](./QUICKSTART.md#3-トークンスワップ2分) | `custom/hyperevm-swap/` |
-| アービトラージ | [MultiSwap詳細](../custom/deploy/multiswap-arbitrage-memo.md) | `custom/deploy/test-arbitrage-*.js` |
+| アービトラージ | [トレーディングペアガイド](./TRADING_PAIRS_GUIDE.md#アービトラージ機会分析) 🆕 | `custom/monitoring/arbitrage-simulation-*.js` |
 | コントラクトデプロイ | [開発者ガイド](./DEVELOPER_GUIDE.md#deploycontract) | `templates/contract-deploy.ts` |
 | ガス分析 | [APIリファレンス](./API_REFERENCE.md#ガス価格ユーティリティ) | `templates/gas-analyzer.ts` |
 | DEX統合 | [DEX統合ガイド](../src/dex/README.md) | `src/dex/` |
@@ -91,6 +96,25 @@ hyperevm-tool/
 - **デプロイ**: Docker, PM2
 
 ## 🔄 更新履歴
+
+### v2.2.0 (2025-07-12) 🆕
+- **DEXペア情報統合マスターシステム構築**
+- 段階的データ収集・統合アプローチの実装
+- 4つの新規スクリプト追加:
+  - `hyperswap-factory-pairs-export.js` - Hyperswap V3収集
+  - `kittenswap-factory-pairs-export.js` - KittenSwap V3収集  
+  - `merge-dex-pairs-to-config.js` - DEXデータ統合
+  - `update-trading-pairs-master.js` - マスター実行スクリプト
+- 自動バックアップ・エラーハンドリング強化
+- Factory契約からの直接ペア収集システム完成
+
+### v2.1.0 (2025-07-11)
+- **トレーディングペア情報の完全整備** 🆕
+- HyperEVM メインネット全70ペアの分析完了
+- Hyperswap V3: プールなし判明（V1/V2のみ）
+- KittenSwap V3: 15ペア対応 (21.4%)
+- 包括的なペア設定ファイル `/config/trading-pairs-mainnet-corrected.json` 作成
+- Factory コントラクトからの自動ペア収集システム構築
 
 ### v2.0.0 (2025-01-08)
 - 包括的なドキュメント体系の構築

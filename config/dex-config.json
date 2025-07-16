@@ -41,10 +41,21 @@
         "hyperswap_v3": {
           "name": "HyperSwap V3",
           "protocol": "uniswap-v3",
-          "quoter": "0x03A918028f22D9E1473B7959C927AD7425A45C7C",
-          "swapRouter": "0x03A918028f22D9E1473B7959C927AD7425A45C7C",
+          "factory": "0xB1c0fa0B789320044A6F623cFe5eBda9562602E3",
+          "quoterV1": "0xF865716B90f09268fF12B6B620e14bEC390B8139",
+          "quoterV2": "0x03A918028f22D9E1473B7959C927AD7425A45C7C",
+          "swapRouter01": "0x4E2960a8cd19B467b82d26D83fAcb0fAE26b094D",
+          "swapRouter02": "0x6D99e7f6747AF2cDbB5164b6DD50e40D4fDe1e77",
+          "nftPositionManager": "0x6eDA206207c09e5428F281761DdC0D300851fBC8",
+          "tickLens": "0x8F1eA97FfDfEDA3bE7EabfED95eF49f909b2975A",
+          "v3Migrator": "0x820Ec81E0556f2f94f4725D358b399c11Cd78cf8",
+          "mixedRouteQuoterV1": "0xEc8F3D08Dd762e935fb914bD2b2E788e5E423516",
+          "positionModifier": "0x19967B036bAEE9Ae0A71e9b8611Df8f1d23CCF6E",
+          "defaultQuoter": "quoterV2",
+          "defaultSwapRouter": "swapRouter02",
           "quoterAbi": "./abi/HyperSwapQuoterV2.json",
-          "swapRouterAbi": "./abi/HyperSwapV3SwapRouter02.json",
+          "swapRouter01Abi": "./abi/HyperSwapV3SwapRouter01.json",
+          "swapRouter02Abi": "./abi/HyperSwapV3SwapRouter02.json",
           "quoteFunctions": {
             "quoteExactInputSingle": {
               "inputs": ["tuple"],
@@ -55,6 +66,16 @@
               "inputs": ["tuple"],
               "outputs": ["uint256", "uint160", "uint32", "uint256"],
               "description": "単一プールでの正確な出力量クォート"
+            },
+            "quoteExactInput": {
+              "inputs": ["bytes", "uint256"],
+              "outputs": ["uint256", "uint160", "uint32", "uint256"],
+              "description": "マルチホップでの正確な入力量クォート"
+            },
+            "quoteExactOutput": {
+              "inputs": ["bytes", "uint256"],
+              "outputs": ["uint256", "uint160", "uint32", "uint256"],
+              "description": "マルチホップでの正確な出力量クォート"
             }
           },
           "swapFunctions": {
@@ -72,11 +93,22 @@
               "inputs": ["tuple"],
               "outputs": ["uint256"],
               "description": "マルチホップでの正確な入力スワップ"
+            },
+            "exactOutput": {
+              "inputs": ["tuple"],
+              "outputs": ["uint256"],
+              "description": "マルチホップでの正確な出力スワップ"
+            },
+            "multicall": {
+              "inputs": ["bytes[]"],
+              "outputs": ["bytes[]"],
+              "description": "複数のスワップを一括実行"
             }
           },
-          "feeTiers": [100, 500, 2500, 10000],
+          "feeTiers": [100, 500, 3000, 10000],
           "type": "v3",
-          "status": "active"
+          "status": "active",
+          "note": "公式アドレス使用・全機能動作確認済み (2025-07-12)"
         },
         "kittenswap_v2": {
           "name": "KittenSwap V2",
@@ -105,6 +137,7 @@
         "kittenswap_cl": {
           "name": "KittenSwap CL (V3)",
           "protocol": "uniswap-v3",
+          "factory": "0x2E08F5Ff603E4343864B14599CAeDb19918BDCaF",
           "quoter": "0xd9949cB0655E8D5167373005Bd85f814c8E0C9BF",
           "swapRouter": "0xd9949cB0655E8D5167373005Bd85f814c8E0C9BF",
           "abi": "./abi/KittenQuoterV2.json",
@@ -218,7 +251,7 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2025-07-05",
+    "lastUpdated": "2025-07-12",
     "description": "HyperEVM DEX設定ファイル - 柔軟なDEX統合のための設定ベース設計"
   }
 }

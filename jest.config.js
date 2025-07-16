@@ -4,15 +4,19 @@ module.exports = {
   roots: ['<rootDir>/tests', '<rootDir>/scripts', '<rootDir>/dashboard'],
   testMatch: [
     '**/__tests__/**/*.test.ts',
-    '**/?(*.)+(spec|test).ts'
+    '**/?(*.)+(spec|test).ts',
+    '**/__tests__/**/*.test.js',
+    '**/?(*.)+(spec|test).js'
   ],
   transform: {
-    '^.+\\.ts$': 'ts-jest'
+    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.js$': 'babel-jest'
   },
   collectCoverageFrom: [
     'scripts/**/*.ts',
     'dashboard/**/*.ts',
     'src/**/*.ts',
+    'custom/**/*.js',
     '!**/*.d.ts',
     '!**/node_modules/**'
   ],

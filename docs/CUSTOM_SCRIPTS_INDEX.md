@@ -137,6 +137,19 @@
 - **kittenswap-all-factories-analysis.js** - 全Factory契約分析（5種類）
 - **kittenswap-abi-validator.js** - ABI検証・最適化ツール
 
+### 🆕 DEXペア情報統合システム（2025年7月版）
+- **hyperswap-factory-pairs-export.js** - Hyperswap V3 Factory全ペア収集
+- **kittenswap-factory-pairs-export.js** - KittenSwap V3 Factory全ペア収集  
+- **merge-dex-pairs-to-config.js** - 両DEXデータ統合・最終Config生成
+- **update-trading-pairs-master.js** 🔥 - 3スクリプト統合マスター実行
+
+### 🔍 DEX統合調査結果（最新）
+- **Hyperswap V3**: プールなし（V1/V2のみ存在）
+- **KittenSwap V3**: 15個のV3対応ペア（21.4%対応率）
+- **KittenSwap V2**: 70個の総ペア
+- **自動更新**: Factory契約からの直接収集
+- **出力**: `config/trading-pairs-mainnet-corrected.json`
+
 ### 🔍 KittenSwap調査結果
 - **V2プール**: 70個（アクティブ）
 - **V3プール**: 0個（存在しない）
