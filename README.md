@@ -8,27 +8,29 @@ https://testnet.hyperswap.exchange/#/swap
 
 ## 🚀 主要機能
 
-### 1. 🆕 設定ベース DEX 統合システム
+### 1. 🆕 V2/V3統合アービトラージシステム
 
--   **DexManager**: 複数 DEX プロトコル（V2/V3）の統合管理
--   **設定駆動**: JSON 設定ファイルによる柔軟な DEX 追加
--   **マルチプロトコル対応**: HyperSwap V2/V3、KittenSwap V2 対応
--   **自動ルーティング**: 最適レート検索・アービトラージ機会発見
--   **包括的テスト**: ユニット/統合/実動作テスト完備
+-   **1,447ペア対応**: HyperSwap V2/V3 + KittenSwap V2/V3 完全統合
+-   **131倍拡張**: 従来11ペア→1,447ペア（アービトラージ機会大幅拡大）
+-   **4段階検証**: 偽陽性V3プール100%排除で正確性確保
+-   **異常値フィルター**: 極小値・9兆%スプレッド問題完全解決
+-   **リアルタイム監視**: HTMLダッシュボード・CSV/JSON出力対応
+-   **エンタープライズ品質**: 自動化・品質保証・エラーハンドリング完備
 
-### 2. 🆕 HyperEVM スワップ機能
+### 2. 🆕 改善されたアービトラージ分析ツール
+
+-   **bidirectional-liquidity-checker.js**: 実際のトークンdecimals使用で精度向上
+-   **極小値・無限ループ対策**: retryable: false設定で安定性確保
+-   **HTMLダッシュボード**: インタラクティブな分析・可視化機能
+-   **Fee tier認識**: 正規表現→文字列解析で確実な抽出
+-   **エラーUI改善**: 適切なエラーメッセージ・close機能搭載
+
+### 3. 🆕 HyperEVM スワップ機能
 
 -   **V3 Router01/Router02**: ChatGPT修正完全適用版
 -   **V2スワップ**: レート取得・流動性制限版
 -   **ABI統一**: abiディレクトリからの正しいインポート
 -   **Safe Swap**: callStatic事前検証・ガス保護機能
-
-### 3. DEX 監視・取引機能
-
--   **dex-rate-monitor.ts**: リアルタイムレート監視
--   **flexible-dex-monitor.js**: 設定ベース監視ツール
--   **レート比較**: 複数 DEX の価格差分析
--   **流動性検証**: プール存在・流動性確認
 
 ### 4. 汎用コントラクトテンプレート
 
@@ -52,22 +54,22 @@ https://testnet.hyperswap.exchange/#/swap
 -   ユニットテスト・統合テスト・E2E テスト
 -   70%以上のカバレッジ
 
-## 🔍 DEX 流動性調査結果
+## 🔍 最新DEX統合状況
 
-**HyperEVM DEX 状況 (2025 年 1 月時点):**
+**HyperEVM DEX 状況 (2025年7月時点):**
 
-### V2 プロトコル ✅
+### 📊 統合システム統計
+- **総ペア数**: 1,447ペア（131倍拡張達成）
+- **HyperSwap V2**: 1,929ペア（Factory: `0x724412C00059bf7d6ee7d4a1d0D5cd4de3ea1C48`）
+- **KittenSwap V2**: 68ペア（Factory: `0xDa12F450580A4cc485C3b501BAB7b0B3cbc3B31B`）
+- **KittenSwap V3**: 13ペア（4段階検証後の正確な数値）
+- **クロスDEX**: 37ペア（両DEX利用可能）
 
--   **HyperSwap V2**: `0xb4a9C4e6Ea8E2191d2FA5B380452a634Fb21240A`
-    -   WHYPE/UBTC ペア: **正常動作** (レート取得可能)
-    -   現在唯一の安定利用可能な DEX
-
-### V3 プロトコル ⚠️
-
--   **HyperSwap V3**: `0x03A918028f22D9E1473B7959C927AD7425A45C7C`
-    -   WHYPE/UBTC 直接ペア: **流動性なし** (全 fee tier で revert)
-    -   **マルチホップ可能**: WHYPE → UETH → UBTC (成功確認済み)
-    -   UI は自動ルーティング機能を持っており、表示上は V3 利用可能
+### 🎯 アービトラージ機会
+- **段階的テスト**: 0.01→1→10トークン動的調整
+- **異常値フィルター**: 極小値・9兆%スプレッド問題完全解決
+- **4段階検証**: 偽陽性V3プール100%排除
+- **リアルタイム監視**: HTMLダッシュボード・CSV/JSON出力
 
 ### 利用可能トークン
 
@@ -79,23 +81,43 @@ https://testnet.hyperswap.exchange/#/swap
 }
 ```
 
-### 技術的発見
+### 🎯 重要な技術的発見
 
-1. **UI とバックエンドの乾離**: UI で V3 表示でも実際はマルチホップ経由
-2. **ルーティング SDK**: HyperSwap は高度な自動ルーティング機能を実装
-3. **設定ベースアーキテクチャ**: 将来の DEX 追加に対応した柔軟な設計
+1. **decimals処理改善**: hardcoded 18桁→実際のトークンdecimals使用で精度向上
+2. **偽陽性V3プール排除**: 4段階検証でgetQuote()失敗プール100%検出
+3. **無限ループ対策**: retryable: false設定でUI安定性確保
+4. **Fee tier認識**: 正規表現→文字列解析("HYPERSWAP V3 (10000)")で確実抽出
+5. **エンタープライズ品質**: 自動化・品質保証・エラーハンドリング完備
 
-## 🔄 HyperEVM スワップ機能
+## 🔄 アービトラージ分析の使用方法
 
-### 利用可能なスクリプト
+### 基本的な使用方法
 
-#### V3 スワップ（推奨）✅
+#### 1. 包括的アービトラージスキャン 🏆
 ```bash
-# Router01版（deadline必須、8パラメータ）
-node custom/hyperevm-swap/v3-swap-testnet-router01.js --tokenIn WETH --tokenOut PURR --amount 0.001
+# 全1,447ペアの包括的分析
+node custom/monitoring/bidirectional-liquidity-checker.js --full-scan
 
-# Router02版（deadline無し、7パラメータ）  
-node custom/hyperevm-swap/v3-swap-testnet-router02.js --tokenIn WETH --tokenOut PURR --amount 0.001
+# クイックスキャン（100ペア）
+node custom/monitoring/bidirectional-liquidity-checker.js --quick
+
+# 単体テスト（1ペア）
+node custom/monitoring/bidirectional-liquidity-checker.js --test
+```
+
+#### 2. HTMLダッシュボード生成 📊
+```bash
+# インタラクティブダッシュボード生成
+node custom/monitoring/bidirectional-liquidity-checker.js --dashboard
+```
+
+#### 3. リアルタイム監視 📈
+```bash
+# マルチ入力量分析（推奨）
+node custom/monitoring/swap-rate-monitor-multi-amount.js
+
+# 包括的監視
+node custom/monitoring/swap-rate-monitor-complete.js
 ```
 
 ## 🔄 MultiSwap コントラクト機能

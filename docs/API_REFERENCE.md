@@ -146,9 +146,11 @@ async getQuote(
 
 **戻り値**: 予想出力量
 
-**サポートDEX**:
-- **Hyperswap V3**: 30ペア対応 (42.9%)
-- **KittenSwap V3**: 64ペア対応 (91.4%)
+**サポートDEX（2025年7月最新）**:
+- **HyperSwap V2**: 1,929ペア対応
+- **KittenSwap V2**: 68ペア対応
+- **KittenSwap V3**: 13ペア対応（4段階検証後）
+- **総ペア数**: 1,447ペア（131倍拡張）
 - **主要ペア**: WHYPE/USDXL, WHYPE/UETH, WHYPE/PAWS, LHYPE/USDXL
 
 ##### executeSwap
@@ -334,6 +336,39 @@ const TOKEN_ADDRESSES = {
 ---
 
 ## 📝 使用例
+
+### 🏆 bidirectional-liquidity-checker.js 使用方法
+
+#### 基本的なアービトラージスキャン
+```bash
+# 全1,447ペアの包括的分析
+node custom/monitoring/bidirectional-liquidity-checker.js --full-scan
+
+# クイックスキャン（100ペア）
+node custom/monitoring/bidirectional-liquidity-checker.js --quick
+
+# 単体テスト（1ペア）
+node custom/monitoring/bidirectional-liquidity-checker.js --test
+```
+
+#### 出力形式
+```bash
+# JSON出力（プログラム用）
+node custom/monitoring/bidirectional-liquidity-checker.js --output json
+
+# CSV出力（Excel用）
+node custom/monitoring/bidirectional-liquidity-checker.js --output csv
+
+# HTMLダッシュボード生成
+node custom/monitoring/bidirectional-liquidity-checker.js --dashboard
+```
+
+#### 改善された機能
+- **実際のdecimals使用**: hardcoded 18桁→トークンコントラクトから取得
+- **無限ループ防止**: retryable: false設定でUI安定性確保
+- **極小値フィルター**: 0.000000001未満の値を除外
+- **Fee tier認識**: "HYPERSWAP V3 (10000)"形式の正確な抽出
+- **エラーハンドリング**: 適切なエラーメッセージ・close機能
 
 ### 基本的なトークンスワップ
 ```typescript
