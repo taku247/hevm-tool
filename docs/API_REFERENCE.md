@@ -369,6 +369,7 @@ node custom/monitoring/bidirectional-liquidity-checker.js --dashboard
 - **極小値フィルター**: 0.000000001未満の値を除外
 - **Fee tier認識**: "HYPERSWAP V3 (10000)"形式の正確な抽出
 - **エラーハンドリング**: 適切なエラーメッセージ・close機能
+- **固定入力量**: 1トークンのみを使用して全プールをテスト
 
 ### 基本的なトークンスワップ
 ```typescript

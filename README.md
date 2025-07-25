@@ -66,7 +66,8 @@ https://testnet.hyperswap.exchange/#/swap
 - **クロスDEX**: 37ペア（両DEX利用可能）
 
 ### 🎯 アービトラージ機会
-- **段階的テスト**: 0.01→1→10トークン動的調整
+- **固定入力量**: 1トークン統一テスト（bidirectional-liquidity-checker）
+- **マルチ入力量**: 1, 2, 5, 10トークン段階的分析（swap-rate-monitor-multi-amount）
 - **異常値フィルター**: 極小値・9兆%スプレッド問題完全解決
 - **4段階検証**: 偽陽性V3プール100%排除
 - **リアルタイム監視**: HTMLダッシュボード・CSV/JSON出力

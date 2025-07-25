@@ -14,31 +14,165 @@ const XLSX = require("xlsx");
 const Table = require("cli-table3");
 const colors = require("colors");
 
+// コントラクトアドレス定数 - 拡張性向上のため一元管理
+const CONTRACT_ADDRESSES = {
+    RPC_URL: "https://rpc.hyperliquid.xyz/evm",
+    HYPERSWAP: {
+        V2_ROUTER: "0xb4a9C4e6Ea8E2191d2FA5B380452a634Fb21240A",
+        V2_FACTORY: "0x724412C00059bf7d6ee7d4a1d0D5cd4de3ea1C48",
+        V3_QUOTER_V2: "0x03A918028f22D9E1473B7959C927AD7425A45C7C",
+        V3_FACTORY: "0xB1c0fa0B789320044A6F623cFe5eBda9562602E3"
+    },
+    KITTENSWAP: {
+        V2_ROUTER: "0xd6eeffbdaf6503ad6539cf8f337d79bebbd40802",
+        V2_FACTORY: "0xDa12F450580A4cc485C3b501BAB7b0B3cbc3B31B",
+        V3_QUOTER_V2: "0xd9949cB0655E8D5167373005Bd85f814c8E0C9BF",
+        V3_FACTORY: "0x2E08F5Ff603E4343864B14599CAeDb19918BDCaF"
+    }
+};
+
+// プロトコル戦略パターン実装 - 拡張性向上のため
+class ProtocolStrategy {
+    constructor(config, provider) {
+        this.config = config;
+        this.provider = provider;
+    }
+
+    async getV2Rate(tokenIn, tokenOut, amountInWei) {
+        throw new Error("getV2Rate must be implemented by subclass");
+    }
+
+    async getV3Rate(tokenIn, tokenOut, amountInWei, params = {}) {
+        throw new Error("getV3Rate must be implemented by subclass");
+    }
+}
+
+class HyperswapStrategy extends ProtocolStrategy {
+    async getV2Rate(tokenIn, tokenOut, amountInWei) {
+        const routerAbi = [
+            "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
+        ];
+        const router = new ethers.Contract(this.config.v2Router, routerAbi, this.provider);
+        const path = [tokenIn, tokenOut];
+        const amounts = await router.getAmountsOut(amountInWei, path);
+        
+        if (!amounts || amounts.length <= 1) {
+            throw new Error('HyperSwap V2 returned invalid amounts array: ' + (amounts?.length || 0) + ' elements');
+        }
+        
+        return {
+            amountOut: amounts[1],
+            gasEstimate: ethers.BigNumber.from(150000)
+        };
+    }
+
+    async getV3Rate(tokenIn, tokenOut, amountInWei, params = {}) {
+        const quoterAbi = [
+            "function quoteExactInputSingle((address tokenIn, address tokenOut, uint256 amountIn, uint24 fee, uint160 sqrtPriceLimitX96)) external returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)"
+        ];
+        const quoter = new ethers.Contract(this.config.v3QuoterV2, quoterAbi, this.provider);
+        const quoteParams = {
+            tokenIn: tokenIn,
+            tokenOut: tokenOut,
+            amountIn: amountInWei,
+            fee: params.fee || 3000,
+            sqrtPriceLimitX96: 0
+        };
+        
+        const result = await quoter.quoteExactInputSingle(quoteParams);
+        return {
+            amountOut: result[0],
+            gasEstimate: result[3]
+        };
+    }
+}
+
+class KittenswapStrategy extends ProtocolStrategy {
+    async getV2Rate(tokenIn, tokenOut, amountInWei) {
+        const routerAbi = [
+            "function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)"
+        ];
+        const router = new ethers.Contract(this.config.v2Router, routerAbi, this.provider);
+        const path = [tokenIn, tokenOut];
+        const amounts = await router.getAmountsOut(amountInWei, path);
+        
+        if (!amounts || amounts.length <= 1) {
+            throw new Error('KittenSwap V2 returned invalid amounts array: ' + (amounts?.length || 0) + ' elements');
+        }
+        
+        return {
+            amountOut: amounts[1],
+            gasEstimate: ethers.BigNumber.from(120000)
+        };
+    }
+
+    async getV3Rate(tokenIn, tokenOut, amountInWei, params = {}) {
+        const quoterAbi = [
+            "function quoteExactInputSingle((address tokenIn, address tokenOut, uint256 amountIn, uint24 tickSpacing, uint160 sqrtPriceLimitX96)) external returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)"
+        ];
+        const quoter = new ethers.Contract(this.config.v3QuoterV2, quoterAbi, this.provider);
+        const quoteParams = {
+            tokenIn: tokenIn,
+            tokenOut: tokenOut,
+            amountIn: amountInWei,
+            tickSpacing: params.tickSpacing || 200,
+            sqrtPriceLimitX96: 0
+        };
+        
+        const result = await quoter.quoteExactInputSingle(quoteParams);
+        return {
+            amountOut: result[0],
+            gasEstimate: result[3]
+        };
+    }
+}
+
 class BidirectionalLiquidityChecker {
     constructor(options = {}) {
         this.rpcUrl =
-            process.env.HYPEREVM_RPC_URL || "https://rpc.hyperliquid.xyz/evm";
+            process.env.HYPEREVM_RPC_URL || CONTRACT_ADDRESSES.RPC_URL;
         this.provider = new ethers.providers.JsonRpcProvider(this.rpcUrl);
         this.silent = options.silent || false; // 🆕 ログ抑制オプション
 
         // デフォルトコントラクト（config読み込み失敗時のフォールバック）
         this.contracts = {
             hyperswap: {
-                v2Router: null,
-                v2Factory: null,
-                v3QuoterV2: null,
-                v3Factory: null,
+                v2Router: CONTRACT_ADDRESSES.HYPERSWAP.V2_ROUTER,
+                v2Factory: CONTRACT_ADDRESSES.HYPERSWAP.V2_FACTORY,
+                v3QuoterV2: CONTRACT_ADDRESSES.HYPERSWAP.V3_QUOTER_V2,
+                v3Factory: CONTRACT_ADDRESSES.HYPERSWAP.V3_FACTORY,
             },
             kittenswap: {
-                v2Router: null,
-                v2Factory: null,
-                v3QuoterV2: null,
-                v3Factory: null,
+                v2Router: CONTRACT_ADDRESSES.KITTENSWAP.V2_ROUTER,
+                v2Factory: CONTRACT_ADDRESSES.KITTENSWAP.V2_FACTORY,
+                v3QuoterV2: CONTRACT_ADDRESSES.KITTENSWAP.V3_QUOTER_V2,
+                v3Factory: CONTRACT_ADDRESSES.KITTENSWAP.V3_FACTORY,
             },
         };
 
         // トークン情報キャッシュ
         this.tokenCache = new Map();
+        
+        // プロトコル戦略ファクトリー
+        this.protocolStrategies = new Map();
+    }
+
+
+    // プロトコル戦略の取得（Factory Pattern）
+    getProtocolStrategy(dex) {
+        if (!this.protocolStrategies.has(dex)) {
+            switch (dex) {
+                case 'hyperswap':
+                    this.protocolStrategies.set(dex, new HyperswapStrategy(this.contracts.hyperswap, this.provider));
+                    break;
+                case 'kittenswap':
+                    this.protocolStrategies.set(dex, new KittenswapStrategy(this.contracts.kittenswap, this.provider));
+                    break;
+                default:
+                    throw new Error(`Unknown protocol: ${dex}`);
+            }
+        }
+        return this.protocolStrategies.get(dex);
     }
 
     async loadDexConfig() {
@@ -193,7 +327,7 @@ class BidirectionalLiquidityChecker {
             );
 
             const [decimals, symbol, name] = await Promise.all([
-                tokenContract.decimals(),
+                tokenContract.decimals().catch(() => 18),
                 tokenContract.symbol().catch(() => "UNKNOWN"),
                 tokenContract.name().catch(() => "Unknown Token"),
             ]);
@@ -258,6 +392,12 @@ class BidirectionalLiquidityChecker {
                     // V2: Router.getAmountsOut使用
                     const path = [tokenIn, tokenOut];
                     const amounts = await this.hyperswapV2Contract.getAmountsOut(amountInWei, path);
+                    
+                    // 安全な配列アクセス - 境界外アクセス対策
+                    if (!amounts || amounts.length <= 1) {
+                        throw new Error('HyperSwap V2 returned invalid amounts array: ' + (amounts?.length || 0) + ' elements');
+                    }
+                    
                     result = {
                         amountOut: amounts[1],
                         gasEstimate: ethers.BigNumber.from(150000), // V2推定ガス
@@ -278,6 +418,12 @@ class BidirectionalLiquidityChecker {
                     // V2: Router.getAmountsOut使用
                     const path = [tokenIn, tokenOut];
                     const amounts = await this.kittenswapV2Contract.getAmountsOut(amountInWei, path);
+                    
+                    // 安全な配列アクセス - 境界外アクセス対策
+                    if (!amounts || amounts.length <= 1) {
+                        throw new Error('KittenSwap V2 returned invalid amounts array: ' + (amounts?.length || 0) + ' elements');
+                    }
+                    
                     result = {
                         amountOut: amounts[1],
                         gasEstimate: ethers.BigNumber.from(120000), // V2推定ガス
@@ -308,6 +454,7 @@ class BidirectionalLiquidityChecker {
                     console.log(`   AmountOut (formatted): ${outputFormatted}`);
                     console.log(`   Rate: ${parseFloat(outputFormatted) / parseFloat(amountFormatted)}`);
                 }
+                
                 
                 return {
                     success: true,
@@ -640,7 +787,8 @@ class BidirectionalLiquidityChecker {
                         opportunities.push({
                             buyProtocol: buyRate.protocol,
                             sellProtocol: sellRate.protocol,
-                            spread: spread
+                            spread: spread,
+                            executionStatus: "概算分析" // 🆕 実際のテスト前の概算を明示
                         });
                     }
                 }
@@ -1110,6 +1258,7 @@ class BidirectionalLiquidityChecker {
                             buyRate: buyProtocol.rate,
                             sellRate: sellProtocol.rate,
                             spread: spread,
+                            executionStatus: "概算分析", // 🆕 実際のテスト前の概算を明示
                             buyDex: buyProtocol.dex,
                             sellDex: sellProtocol.dex,
                             crossDex: buyProtocol.dex !== sellProtocol.dex,
@@ -1150,6 +1299,7 @@ class BidirectionalLiquidityChecker {
                 crossDex: false,
                 estimatedGasCost: protocol.gasEstimate || 0,
                 profit: 0,
+                executionStatus: "単一プロトコル", // 🆕 アービトラージ不可を明示
                 _debug: {
                     comparison: `${protocol.protocol} (単一プロトコル)`,
                     rateRatio: "1.0000",
@@ -1210,6 +1360,7 @@ class BidirectionalLiquidityChecker {
                         crossDex: buyProtocol.dex !== sellProtocol.dex,
                         estimatedGasCost: (buyProtocol.gasEstimate || 0) + (sellProtocol.gasEstimate || 0),
                         profit: spread > 0 ? spread : 0, // 正のスプレッドのみ利益とみなす
+                        executionStatus: "概算分析", // 🆕 実際のテスト前の概算を明示
                         _debug: {
                             comparison: `${buyProtocol.protocol}(${buyProtocol.rate.toFixed(6)}) → ${sellProtocol.protocol}(${sellProtocol.rate.toFixed(6)})`,
                             rateRatio: (Math.max(buyProtocol.rate, sellProtocol.rate) / Math.min(buyProtocol.rate, sellProtocol.rate)).toFixed(4),
@@ -1272,8 +1423,10 @@ class BidirectionalLiquidityChecker {
 
         // 各プール組み合わせでA→B→A実行
         if (!this.silent) {
-            console.log(`\n🔄 真のアービトラージ計算: ${pairConfig.name} (${tokenAmount}トークン)`);
+            console.log(`\n\x1b[36m${'═'.repeat(80)}\x1b[0m`);
+            console.log(`🔄 真のアービトラージ計算: ${pairConfig.name} (${tokenAmount}トークン)`);
             console.log(`   利用可能プール: ${forwardPools.length}買い × ${reversePools.length}売り = ${forwardPools.length * reversePools.length}組み合わせ`);
+            console.log(`\x1b[34m${'─'.repeat(80)}\x1b[0m`);
         }
         
         for (const buyPool of forwardPools) {
@@ -1281,6 +1434,14 @@ class BidirectionalLiquidityChecker {
                 // A→B→A実行計算
                 if (buyPool.rate < 1e-6 || sellPool.rate < 1e-6) continue;
                 if (buyPool.output < 0.000001 || sellPool.output < 0.000001) continue;
+                
+                // 🔧 同一プロトコル内の組み合わせを除外（真のアービトラージではない）
+                if (buyPool.protocol === sellPool.protocol) {
+                    if (!this.silent) {
+                        console.log(`   ⏭️  スキップ: ${buyPool.protocol} (同一プロトコル内取引)`);
+                    }
+                    continue;
+                }
 
                 // 真のアービトラージ計算
                 // Step 1: tokenAmount A → buyPool.output B (買い) - 実際のコントラクトクォート
@@ -1479,6 +1640,13 @@ class BidirectionalLiquidityChecker {
             worstProtocol = `${worstOpp.buyProtocol} + ${worstOpp.sellProtocol}`;
         }
         
+        // 🔧 計算完了の区切り線を追加
+        if (!this.silent) {
+            console.log(`\x1b[36m${'═'.repeat(80)}\x1b[0m`);
+            console.log(`✅ ${pairConfig.name} 計算完了 - 機会: ${sortedOpportunities.length}件 / 全組み合わせ: ${allExecutionResults.length}件`);
+            console.log(`\x1b[36m${'═'.repeat(80)}\x1b[0m\n`);
+        }
+        
         return {
             opportunities: sortedOpportunities,
             allExecutionResults: allExecutionResults, // 全ての実行結果（利益・損失問わず）
@@ -1518,6 +1686,7 @@ class BidirectionalLiquidityChecker {
                 crossDex: res.crossDex,
                 estimatedGasCost: res.estimatedGasCost,
                 profit: res.profit,
+                executionStatus: res.executionStatus, // 🔧 executionStatusを追加
                 _debug: res._debug
             }));
         } else if (result.opportunities.length > 0) {
@@ -1533,10 +1702,11 @@ class BidirectionalLiquidityChecker {
                 crossDex: opp.crossDex,
                 estimatedGasCost: opp.estimatedGasCost,
                 profit: opp.profit,
+                executionStatus: opp.executionStatus, // 🔧 executionStatusを追加
                 _debug: opp._debug
             }));
         } else {
-            // 実行可能な組み合わせがない場合は空の配列を返す（N/Aエントリを削除）
+            // 実行可能な組み合わせがない場合は空の配列を返す（元の動作に戻す）
             allCombinations = [];
         }
         
@@ -1547,7 +1717,7 @@ class BidirectionalLiquidityChecker {
             validProtocols: result.forwardRatesCount + result.reverseRatesCount,
             configProtocols: this.getAvailableProtocolCount(pairConfig) * 2, // 双方向なので2倍
             allOpportunities: result.opportunities,
-            allCombinations: allCombinations, // ダッシュボード表示用の全組み合わせ
+            allCombinations: allCombinations, // 元の動作に戻す
             forwardRatesCount: result.forwardRatesCount,
             reverseRatesCount: result.reverseRatesCount,
             pairName: `${tokenA.symbol}/${tokenB.symbol}`,
@@ -2237,14 +2407,6 @@ class BidirectionalLiquidityChecker {
                                             <label for="spreadFilterCombination" class="form-label">最小スプレッド:</label>
                                             <input type="number" id="spreadFilterCombination" class="form-control" placeholder="例: 1.0" step="0.1" onchange="filterCombinations()">
                                         </div>
-                                        <div class="col-md-3">
-                                            <label for="crossDexFilter" class="form-label">クロスDEX:</label>
-                                            <select id="crossDexFilter" class="form-select" onchange="filterCombinations()">
-                                                <option value="">全て</option>
-                                                <option value="true">クロスDEXのみ</option>
-                                                <option value="false">同一DEXのみ</option>
-                                            </select>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -2258,7 +2420,7 @@ class BidirectionalLiquidityChecker {
                                                 <th onclick="sortTable('combinationsTable', 4)">初期枚数 ⇅</th>
                                                 <th onclick="sortTable('combinationsTable', 5)">中間枚数 ⇅</th>
                                                 <th onclick="sortTable('combinationsTable', 6)">最終枚数 ⇅</th>
-                                                <th onclick="sortTable('combinationsTable', 7)">クロスDEX ⇅</th>
+                                                <th>実行状態</th>
                                                 <th>テスト量</th>
                                                 <th>実行</th>
                                             </tr>
@@ -2287,11 +2449,9 @@ class BidirectionalLiquidityChecker {
                                                         combinationsToShow.forEach(opp => {
                                                             const spreadClass = opp.spread > 5 ? 'spread-high' : 
                                                                               opp.spread > 2 ? 'spread-medium' : 'spread-low';
-                                                            const crossDex = opp.buyProtocol.includes('HYPERSWAP') !== opp.sellProtocol.includes('HYPERSWAP');
                                                             allCombinations.push(`<tr class="${spreadClass}" 
                                                                 data-pair="${r.pair}" 
                                                                 data-spread="${opp.spread}" 
-                                                                data-cross-dex="${crossDex}" 
                                                                 data-stage="${stage}"
                                                                 data-token-a-address="${r.tokenA?.address || ''}"
                                                                 data-token-b-address="${r.tokenB?.address || ''}"
@@ -2307,27 +2467,14 @@ class BidirectionalLiquidityChecker {
                                                                 <td><a href="#" class="flow-link" data-flow-type="initial" data-flow-detail="${(opp._debug?.buyRateDetail || '').replace(/"/g, '&quot;')}" onclick="showFlowDetail(this)" style="text-decoration: none; color: #28a745; cursor: pointer;">${(opp._debug?.initialAmount || 0).toFixed(6)} ${opp._debug?.tokenASymbol || ''}</a></td>
                                                                 <td><a href="#" class="flow-link" data-flow-type="intermediate" data-flow-detail="${(opp._debug?.buyRateDetail || '').replace(/"/g, '&quot;')}" onclick="showFlowDetail(this)" style="text-decoration: none; color: #ffc107; cursor: pointer;">${(opp._debug?.intermediateAmount || 0).toFixed(6)} ${opp._debug?.tokenBSymbol || ''}</a></td>
                                                                 <td><a href="#" class="flow-link" data-flow-type="final" data-flow-detail="${(opp._debug?.sellRateDetail || '').replace(/"/g, '&quot;')}" onclick="showFlowDetail(this)" style="text-decoration: none; color: ${opp._debug?.step2Failed ? '#dc3545' : '#17a2b8'}; cursor: pointer;">${opp._debug?.step2Failed ? '失敗' : (opp._debug?.finalAmount || 0).toFixed(6) + ' ' + (opp._debug?.tokenASymbol || '')}</a></td>
-                                                                <td><span class="badge ${opp.executionStatus === '成功' ? 'bg-success' : opp.executionStatus === '売りで失敗' ? 'bg-danger' : 'bg-secondary'}">${opp.executionStatus || '成功'}</span></td>
-                                                                <td>${crossDex ? '🔄' : '🔁'}</td>
+                                                                <td><span class="badge ${opp.executionStatus === '成功' ? 'bg-success' : opp.executionStatus === '売りで失敗' ? 'bg-danger' : opp.executionStatus === '単一プロトコル' ? 'bg-warning' : opp.executionStatus === '概算分析' ? 'bg-info' : 'bg-secondary'}">${opp.executionStatus || '不明'}</span></td>
                                                                 <td><span class="badge ${stage === 'stage1' ? 'bg-info' : stage === 'stage2' ? 'bg-primary' : 'bg-secondary'}" title="${stage === 'stage1' ? '1トークンでテスト' : stage === 'stage2' ? '3トークンでテスト' : '10トークンでテスト'}">${stage === 'stage1' ? '1' : stage === 'stage2' ? '3' : '10'}トークン</span></td>
                                                                 <td class="text-center">
-                                                                    <div class="btn-group" role="group">
-                                                                        <button class="btn btn-sm btn-outline-primary" 
-                                                                                onclick="openExecutionModal(this, 'buy')" 
-                                                                                title="買いスワップ実行">
-                                                                            📈
-                                                                        </button>
-                                                                        <button class="btn btn-sm btn-outline-warning" 
-                                                                                onclick="openExecutionModal(this, 'sell')" 
-                                                                                title="売りスワップ実行">
-                                                                            📉
-                                                                        </button>
-                                                                        <button class="btn btn-sm btn-outline-success" 
-                                                                                onclick="openExecutionModal(this, 'arbitrage')" 
-                                                                                title="アービトラージ実行">
-                                                                            🔄
-                                                                        </button>
-                                                                    </div>
+                                                                    <button class="btn btn-sm btn-outline-primary" 
+                                                                            onclick="openUnifiedExecutionModal(this)" 
+                                                                            title="スワップ実行">
+                                                                        ⚡
+                                                                    </button>
                                                                 </td>
                                                             </tr>`);
                                                         });
@@ -2342,8 +2489,6 @@ class BidirectionalLiquidityChecker {
                                     <div class="alert alert-info">
                                         <h6>📋 表示説明:</h6>
                                         <ul class="mb-0">
-                                            <li><strong>🔄 クロスDEX機会</strong>: HyperSwap ⇄ KittenSwap間でのアービトラージ</li>
-                                            <li><strong>🔁 同一DEX内機会</strong>: 同じDEX内の異なるプロトコル間でのアービトラージ</li>
                                             <li><strong>テスト量</strong>: 
                                                 <span class="badge bg-info">1トークン</span> = 小額テスト、
                                                 <span class="badge bg-primary">3トークン</span> = 中額テスト，
@@ -2394,22 +2539,23 @@ class BidirectionalLiquidityChecker {
                 <div class="modal-body">
                     <!-- 実行設定パネル -->
                     <div class="row mb-4">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <label for="executionType" class="form-label">実行タイプ:</label>
+                            <select id="executionType" class="form-select">
+                                <option value="buy">📈 買いスワップ</option>
+                                <option value="sell">📉 売りスワップ</option>
+                                <option value="arbitrage">🔄 アービトラージ</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
                             <label for="executionAmount" class="form-label">実行量:</label>
                             <input type="number" id="executionAmount" class="form-control" step="0.001" value="1" min="0.001">
                         </div>
-                        <div class="col-md-3">
-                            <label for="executionMode" class="form-label">実行モード:</label>
-                            <select id="executionMode" class="form-select">
-                                <option value="test">🧪 テスト（シミュレーション）</option>
-                                <option value="live">🔴 実際実行（注意）</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="slippage" class="form-label">スリッページ許容度:</label>
                             <input type="number" id="slippage" class="form-control" value="0.5" step="0.1" min="0.1">
                         </div>
-                        <div class="col-md-3 d-flex align-items-end">
+                        <div class="col-md-4 d-flex align-items-end">
                             <button class="btn btn-primary w-100" onclick="executeRealTimeAction()">
                                 <span id="executeButtonText">実行</span>
                                 <span id="executeButtonIcon">⚡</span>
@@ -2564,7 +2710,6 @@ class BidirectionalLiquidityChecker {
             const pairFilter = document.getElementById('pairFilterCombination').value;
             const testAmountFilter = document.getElementById('testAmountFilter').value;
             const spreadFilter = parseFloat(document.getElementById('spreadFilterCombination').value) || 0;
-            const crossDexFilter = document.getElementById('crossDexFilter').value;
             
             const rows = document.querySelectorAll('#combinationsTableBody tr');
             let visibleCount = 0;
@@ -2588,11 +2733,6 @@ class BidirectionalLiquidityChecker {
                     show = show && (spread >= spreadFilter);
                 }
                 
-                // クロスDEXフィルター
-                if (crossDexFilter) {
-                    const isCrossDex = row.dataset.crossDex === 'true';
-                    show = show && (isCrossDex === (crossDexFilter === 'true'));
-                }
                 
                 row.style.display = show ? '' : 'none';
                 if (show) visibleCount++;
@@ -2979,7 +3119,46 @@ class BidirectionalLiquidityChecker {
             return errors;
         }
 
-        // 統一モーダル開く（グローバルスコープ）
+        // 新統一モーダル開く（グローバルスコープ）- 実行タイプ選択対応
+        window.openUnifiedExecutionModal = function(buttonElement) {
+            const rowData = extractRowData(buttonElement);
+            const validationErrors = validateExecutionData(rowData);
+            
+            if (validationErrors.length > 0) {
+                alert('データエラー:\\n' + validationErrors.join('\\n'));
+                return;
+            }
+            
+            // モーダルタイトル設定
+            const modalTitle = document.getElementById('unifiedExecutionModalTitle');
+            modalTitle.textContent = '⚡ スワップ実行 - ' + rowData.pair;
+            
+            // データをモーダルに保存
+            const modal = document.getElementById('unifiedExecutionModal');
+            modal.dataset.rowData = JSON.stringify(rowData);
+            
+            // 実行タイプセレクトボックスのデフォルト値をarbitrageに設定
+            const executionTypeSelect = document.getElementById('executionType');
+            executionTypeSelect.value = 'arbitrage';
+            
+            // 実行タイプ変更時の履歴データ更新とボタン表示更新イベントリスナー追加
+            executionTypeSelect.onchange = function() {
+                displayHistoricalData(rowData, this.value);
+                updateExecutionButton(this.value);
+            };
+            
+            // 初期ボタン表示更新
+            updateExecutionButton('arbitrage');
+            
+            // 初期履歴データタブを表示（デフォルトでアービトラージ）
+            displayHistoricalData(rowData, 'arbitrage');
+            
+            // モーダル表示
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+        };
+
+        // 従来のモーダル開く（後方互換性のため保持）
         window.openExecutionModal = function(buttonElement, executionType) {
             const rowData = extractRowData(buttonElement);
             const validationErrors = validateExecutionData(rowData);
@@ -3003,6 +3182,19 @@ class BidirectionalLiquidityChecker {
             modal.dataset.executionType = executionType;
             modal.dataset.rowData = JSON.stringify(rowData);
             
+            // 実行タイプセレクトボックスを指定タイプに設定
+            const executionTypeSelect = document.getElementById('executionType');
+            executionTypeSelect.value = executionType;
+            
+            // 実行タイプ変更時の履歴データ更新とボタン表示更新イベントリスナー追加
+            executionTypeSelect.onchange = function() {
+                displayHistoricalData(rowData, this.value);
+                updateExecutionButton(this.value);
+            };
+            
+            // ボタン表示更新
+            updateExecutionButton(executionType);
+            
             // 履歴データタブを表示
             displayHistoricalData(rowData, executionType);
             
@@ -3010,6 +3202,22 @@ class BidirectionalLiquidityChecker {
             const bootstrapModal = new bootstrap.Modal(modal);
             bootstrapModal.show();
         };
+
+        // 実行ボタンの表示を実行タイプに応じて更新
+        function updateExecutionButton(executionType) {
+            const executeButtonText = document.getElementById('executeButtonText');
+            const executeButtonIcon = document.getElementById('executeButtonIcon');
+            
+            const typeConfig = {
+                'buy': { text: '買いスワップ実行', icon: '📈' },
+                'sell': { text: '売りスワップ実行', icon: '📉' },
+                'arbitrage': { text: 'アービトラージ実行', icon: '🔄' }
+            };
+            
+            const config = typeConfig[executionType] || typeConfig['arbitrage'];
+            executeButtonText.textContent = config.text;
+            executeButtonIcon.textContent = config.icon;
+        }
 
         // 履歴データ表示
         function displayHistoricalData(rowData, executionType) {
@@ -3066,18 +3274,17 @@ class BidirectionalLiquidityChecker {
         // リアルタイム実行
         window.executeRealTimeAction = async function() {
             const modal = document.getElementById('unifiedExecutionModal');
-            const executionType = modal.dataset.executionType;
+            // 🆕 実行タイプセレクトボックスから値を取得（既存のdataset.executionTypeより優先）
+            const executionType = document.getElementById('executionType').value || modal.dataset.executionType || 'arbitrage';
             const rowData = JSON.parse(modal.dataset.rowData);
             
             const content = document.getElementById('realtimeContent');
             const inputAmount = document.getElementById('executionAmount').value || '1';
-            const testMode = document.getElementById('executionMode').value === 'test';
             
             // 🔍 実行開始時の入力量ログ
             console.log(\`🔍 executeRealTimeAction 開始:\`);
             console.log(\`  - executionType: \${executionType}\`);
             console.log(\`  - inputAmount (raw): "\${inputAmount}" (type: \${typeof inputAmount})\`);
-            console.log(\`  - testMode: \${testMode}\`);
             console.log(\`  - rowData.pair: \${rowData.pair}\`);
             
             content.innerHTML = \`
@@ -3085,7 +3292,7 @@ class BidirectionalLiquidityChecker {
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">実行中...</span>
                     </div>
-                    <p class="mt-2">\${testMode ? 'テスト' : '実際の'}実行中...</p>
+                    <p class="mt-2">実行中...</p>
                 </div>
             \`;
             
@@ -3111,17 +3318,17 @@ class BidirectionalLiquidityChecker {
                 
                 switch(executionType) {
                     case 'buy':
-                        result = await executeBuySwap(rowData, amountNum, testMode);
+                        result = await executeBuySwap(rowData, amountNum);
                         break;
                     case 'sell':
-                        result = await executeSellSwap(rowData, amountNum, testMode);
+                        result = await executeSellSwap(rowData, amountNum);
                         break;
                     case 'arbitrage':
-                        result = await executeArbitrageSwap(rowData, amountNum, testMode);
+                        result = await executeArbitrageSwap(rowData, amountNum);
                         break;
                 }
                 
-                displayRealtimeResult(result, executionType, testMode);
+                displayRealtimeResult(result, executionType);
                 
             } catch (error) {
                 content.innerHTML = \`
@@ -3159,14 +3366,11 @@ class BidirectionalLiquidityChecker {
         }
 
         // コントラクト実行関数群
-        async function executeBuySwap(rowData, amountNum, testMode) {
+        async function executeBuySwap(rowData, amountNum) {
             const startTime = Date.now();
             
             // RealTimeExecutorを使用する場合
             if (window.realTimeExecutor) {
-                // 実行モードを設定
-                window.realTimeExecutor.setExecutionMode(testMode);
-                
                 // 拡張されたrowDataを構築
                 const enrichedRowData = await window.enrichRowData(rowData);
                 return await window.realTimeExecutor.executeBuySwap(enrichedRowData, amountNum);
@@ -3224,7 +3428,7 @@ class BidirectionalLiquidityChecker {
                             path: path
                         },
                         returnValue: amounts.map(a => a.toString()),
-                        outputAmount: ethers.utils.formatUnits(amounts[1], 18)
+                        outputAmount: amounts.length > 1 ? ethers.utils.formatUnits(amounts[1], 18) : "0"
                     };
                     
                 } else {
@@ -3268,8 +3472,7 @@ class BidirectionalLiquidityChecker {
                     outputAmount: parseFloat(contractResult.outputAmount),
                     executionTime: executionTime,
                     protocol: rowData.buyProtocol,
-                    contractDetails: contractResult,
-                    simulation: testMode
+                    contractDetails: contractResult
                 };
                 
             } catch (error) {
@@ -3291,14 +3494,11 @@ class BidirectionalLiquidityChecker {
             }
         }
 
-        async function executeSellSwap(rowData, amountNum, testMode) {
+        async function executeSellSwap(rowData, amountNum) {
             const startTime = Date.now();
             
             // RealTimeExecutorを使用する場合
             if (window.realTimeExecutor) {
-                // 実行モードを設定
-                window.realTimeExecutor.setExecutionMode(testMode);
-                
                 // 拡張されたrowDataを構築
                 const enrichedRowData = await window.enrichRowData(rowData);
                 return await window.realTimeExecutor.executeSellSwap(enrichedRowData, amountNum);
@@ -3370,13 +3570,25 @@ class BidirectionalLiquidityChecker {
                     
                     console.log(\`🔍 HyperSwap V2 結果:\`);
                     console.log(\`  - Amounts[0] (input): \${amounts[0].toString()}\`);
-                    console.log(\`  - Amounts[1] (output): \${amounts[1].toString()}\`);
-                    console.log(\`  - Output (formatted): \${ethers.utils.formatUnits(amounts[1], tokenBInfo.decimals)}\`);
+                    console.log(\`  - Amounts[1] (output): \${amounts.length > 1 ? amounts[1].toString() : 'undefined'}\`);
+                    const outputFormatted = amounts.length > 1 ? ethers.utils.formatUnits(amounts[1], tokenBInfo.decimals) : '0';
+                    console.log(\`  - Output (formatted): \${outputFormatted}\`);
+                    
+                    // 🚨 異常値検出: レート合理性チェック
+                    const inputFormatted = parseFloat(ethers.utils.formatUnits(amountIn, tokenAInfo.decimals));
+                    const outputParsed = parseFloat(outputFormatted);
+                    const rate = outputParsed / inputFormatted;
+                    
+                    
+                    // 配列長チェック - 境界外アクセス対策
+                    if (!amounts || amounts.length <= 1) {
+                        throw new Error('HyperSwap V2 returned invalid amounts array: ' + (amounts?.length || 0) + ' elements');
+                    }
                     
                     // ゼロ出力チェック
-                    if (!amounts[1] || amounts[1].eq(0)) {
-                        console.warn(\`⚠️ HyperSwap V2 returned zero output\`);
-                        throw new Error(\`HyperSwap V2 returned zero output - insufficient liquidity or pool does not exist\`);
+                    if (!amounts || amounts.length <= 1 || !amounts[1] || amounts[1].eq(0)) {
+                        console.warn('⚠️ HyperSwap V2 returned zero output');
+                        throw new Error('HyperSwap V2 returned zero output - insufficient liquidity or pool does not exist');
                     }
                     
                     contractResult = {
@@ -3387,7 +3599,7 @@ class BidirectionalLiquidityChecker {
                             path: path
                         },
                         returnValue: amounts.map(a => a.toString()),
-                        outputAmount: ethers.utils.formatUnits(amounts[1], tokenBInfo.decimals)
+                        outputAmount: amounts.length > 1 ? ethers.utils.formatUnits(amounts[1], tokenBInfo.decimals) : "0"
                     };
                     
                 } else {
@@ -3431,8 +3643,7 @@ class BidirectionalLiquidityChecker {
                     outputAmount: parseFloat(contractResult.outputAmount),
                     executionTime: executionTime,
                     protocol: rowData.sellProtocol,
-                    contractDetails: contractResult,
-                    simulation: testMode
+                    contractDetails: contractResult
                 };
                 
             } catch (error) {
@@ -3454,14 +3665,11 @@ class BidirectionalLiquidityChecker {
             }
         }
 
-        async function executeArbitrageSwap(rowData, amountNum, testMode) {
+        async function executeArbitrageSwap(rowData, amountNum) {
             const startTime = Date.now();
             
             // RealTimeExecutorを使用する場合
             if (window.realTimeExecutor) {
-                // 実行モードを設定
-                window.realTimeExecutor.setExecutionMode(testMode);
-                
                 const enrichedRowData = await window.enrichRowData(rowData);
                 return await window.realTimeExecutor.executeArbitrage(enrichedRowData, amountNum);
             }
@@ -3469,7 +3677,7 @@ class BidirectionalLiquidityChecker {
             // 従来の実装（フォールバック）
             try {
                 // Step 1: 買いスワップ実行
-                const buyResult = await executeBuySwap(rowData, amountNum, testMode);
+                const buyResult = await executeBuySwap(rowData, amountNum);
                 if (!buyResult.success) {
                     return {
                         success: false,
@@ -3490,7 +3698,7 @@ class BidirectionalLiquidityChecker {
                 }
                 
                 // Step 2: 売りスワップ実行（買いスワップの出力量を入力）
-                const sellResult = await executeSellSwap(rowData, buyResult.outputAmount, testMode);
+                const sellResult = await executeSellSwap(rowData, buyResult.outputAmount);
                 if (!sellResult.success) {
                     return {
                         success: false,
@@ -3517,8 +3725,7 @@ class BidirectionalLiquidityChecker {
                     profitPercentage: profitPercentage,
                     executionTime: executionTime,
                     step1: buyResult,
-                    step2: sellResult,
-                    simulation: testMode
+                    step2: sellResult
                 };
                 
             } catch (error) {
@@ -3531,7 +3738,7 @@ class BidirectionalLiquidityChecker {
         }
 
         // リアルタイム結果表示
-        function displayRealtimeResult(result, executionType, testMode) {
+        function displayRealtimeResult(result, executionType) {
             const content = document.getElementById('realtimeContent');
             const modal = document.getElementById('unifiedExecutionModal');
             const rowData = JSON.parse(modal.dataset.rowData);
@@ -3563,18 +3770,17 @@ class BidirectionalLiquidityChecker {
             
             // RealTimeExecutorの結果の場合は特別処理
             if (result.realTime) {
-                displayRealTimeExecutorResult(result, executionType, testMode);
+                displayRealTimeExecutorResult(result, executionType);
                 return;
             }
         }
 
         // RealTimeExecutor専用結果表示関数
-        function displayRealTimeExecutorResult(result, executionType, testMode) {
+        function displayRealTimeExecutorResult(result, executionType) {
             // デバッグログ追加
             console.log('🔍 displayRealTimeExecutorResult呼び出し:', {
                 result: result,
                 executionType: executionType,
-                testMode: testMode,
                 timestamp: new Date().toISOString()
             });
             
@@ -3682,7 +3888,7 @@ class BidirectionalLiquidityChecker {
                 content.innerHTML = \`
                     <div class="card">
                         <div class="card-header bg-success text-white">
-                            <h6 class="mb-0">✅ \${typeNames[executionType]} 結果 \${testMode ? '(テストモード)' : '(リアルタイムデータ)'}</h6>
+                            <h6 class="mb-0">✅ \${typeNames[executionType]} 結果</h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -3756,7 +3962,7 @@ class BidirectionalLiquidityChecker {
                 content.innerHTML = \`
                     <div class="card">
                         <div class="card-header bg-success text-white">
-                            <h6 class="mb-0">✅ \${typeNames[executionType]} 結果 \${testMode ? '(テストモード)' : '(リアルタイムデータ)'}</h6>
+                            <h6 class="mb-0">✅ \${typeNames[executionType]} 結果</h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -3970,9 +4176,12 @@ class BidirectionalLiquidityChecker {
                             const path = [tokenIn, tokenOut];
                             console.log('📡 HyperSwap V2 Router呼び出し前...');
                             const amounts = await router.getAmountsOut(amountIn, path);
-                            console.log('✅ HyperSwap V2 Router結果:', ethers.utils.formatUnits(amounts[1], 18));
+                            console.log('✅ HyperSwap V2 Router結果:', amounts.length > 1 ? ethers.utils.formatUnits(amounts[1], 18) : 'undefined (配列長不足)');
                             
-                            // 重要: 0.0の結果チェックを追加
+                            // 重要: 配列長と0.0の結果チェックを追加
+                            if (!amounts || amounts.length <= 1) {
+                                throw new Error('HyperSwap V2 returned invalid amounts array: ' + (amounts?.length || 0) + ' elements');
+                            }
                             if (!amounts[1] || amounts[1].eq(0)) {
                                 console.warn('⚠️ HyperSwap V2 returned zero output');
                                 throw new Error('HyperSwap V2 returned zero output - insufficient liquidity or pool does not exist');
@@ -4015,6 +4224,11 @@ class BidirectionalLiquidityChecker {
                             const router = new ethers.Contract(this.contracts.kittenswap.v2Router, routerAbi, this.provider);
                             const path = [tokenIn, tokenOut];
                             const amounts = await router.getAmountsOut(amountIn, path);
+                            
+                            // 配列長チェック
+                            if (!amounts || amounts.length <= 1) {
+                                throw new Error('KittenSwap V2 returned invalid amounts array: ' + (amounts?.length || 0) + ' elements');
+                            }
                             
                             result = {
                                 amountOut: amounts[1],
@@ -4106,18 +4320,9 @@ class BidirectionalLiquidityChecker {
             constructor(bidirectionalChecker) {
                 this.checker = bidirectionalChecker;
                 this.provider = bidirectionalChecker.provider;
-                this.testMode = true; // READ関数のみ使用（WRITE関数は使用しない）
                 
                 console.log('🔍 RealTimeExecutor initialized - READ関数でリアルタイムクォート取得');
                 console.log('   コントラクトREAD関数を使用して実際の出力量を計算します');
-            }
-
-            setExecutionMode(testMode) {
-                this.testMode = testMode;
-                console.log('🔄 実行モード設定: ' + (testMode ? 'テスト（READ専用）' : '実際実行（WRITE含む）'));
-                if (!testMode) {
-                    console.warn('⚠️  実際実行モードは資金移動を伴います。十分注意してください。');
-                }
             }
 
             async executeBuySwap(rowData, inputAmount) {
@@ -4136,7 +4341,6 @@ class BidirectionalLiquidityChecker {
                     
                     // デバッグログ追加
                     console.log('🔍 executeBuySwap実行:', {
-                        testMode: this.testMode,
                         tokenA: tokenA.symbol,
                         tokenB: tokenB.symbol,
                         inputAmount: inputAmount,
@@ -4323,7 +4527,6 @@ class BidirectionalLiquidityChecker {
                         outputAmount: outputAmount,
                         rate: rate,
                         timestamp: timestamp,
-                        testMode: this.testMode,
                         sequence: executionResult.debugInfo.executionSequence
                     });
                     
@@ -5052,7 +5255,7 @@ async function main() {
         } else if (mode === 'scan') {
             // フルスキャンモード: 全ペアを処理
             const options = {
-                spreadThreshold: parseFloat(args[1]) || 1.0,
+                spreadThreshold: parseFloat(args[1]) || 0.1, // 🔧 0.1%に修正（1%→0.1%）
                 batchSize: parseInt(args[2]) || 10,
                 trueArbitrage: true, // 🆕 真のアービトラージをデフォルトとする
                 silent: args.includes('--silent') // 🆕 警告ログ抑制オプション
@@ -5069,7 +5272,7 @@ async function main() {
             checker.loadConfig = async () => limitedPairs;
             
             await checker.processAllPairs({
-                spreadThreshold: 1.0,
+                spreadThreshold: 0.1, // 🔧 0.1%に修正（1%→0.1%）
                 trueArbitrage: true, // 🆕 真のアービトラージをデフォルトとする
                 batchSize: 20
             });
